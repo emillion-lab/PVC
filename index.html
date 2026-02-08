@@ -1,925 +1,202 @@
-<!doctype html>
-<html lang="bg">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>PV Калкулатор — България</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>☀️ Solar System Calculator</title>
+
+<!-- App icon -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E☀️%3C/text%3E%3C/svg%3E">
+
 <style>
-:root {
-  --bg: #080c14;
-  --card: #0e1525;
-  --card2: #131b2e;
-  --text: #e4ebf8;
-  --muted: #7e8da6;
-  --dim: #4a5568;
-  --line: rgba(255,255,255,.08);
-  --sun: #f5c542;
-  --sun-dim: rgba(245,197,66,.15);
-  --green: #34d399;
-  --green-dim: rgba(52,211,153,.12);
-  --amber: #fbbf24;
-  --amber-dim: rgba(251,191,36,.12);
-  --red: #f87171;
-  --red-dim: rgba(248,113,113,.12);
-  --blue: #60a5fa;
-  --blue-dim: rgba(96,165,250,.12);
-  --slider-pad: 18px; /* extra vertical padding around sliders for touch */
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  font-family:'DM Sans',system-ui,sans-serif;
-  background:var(--bg);color:var(--text);
-  line-height:1.5;min-height:100vh;
-  overscroll-behavior-y:contain;
-}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 60% 50% at 20% 10%,rgba(245,197,66,.04),transparent),
-    radial-gradient(ellipse 50% 40% at 80% 80%,rgba(96,165,250,.03),transparent);
+body {
+    font-family: system-ui, sans-serif;
+    background: linear-gradient(180deg, #0b1220, #05070d);
+    color: #eaeaea;
+    margin: 0;
+    padding: 20px;
 }
 
-.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 16px}
-
-/* ─── Header ─── */
-header{padding:24px 0 8px}
-.logo{display:flex;align-items:center;gap:12px;margin-bottom:4px}
-.logo-icon{
-  width:38px;height:38px;border-radius:11px;
-  background:linear-gradient(135deg,var(--sun),#e88d0c);
-  display:grid;place-items:center;font-size:19px;
-  box-shadow:0 4px 16px rgba(245,197,66,.25);
-}
-h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
-.sub{color:var(--muted);font-size:12.5px;max-width:560px}
-
-/* ─── Grid ─── */
-.grid{display:grid;grid-template-columns:1fr 400px;gap:14px;margin-top:14px}
-@media(max-width:980px){.grid{grid-template-columns:1fr}}
-
-.card{
-  background:var(--card);border:1px solid var(--line);
-  border-radius:16px;padding:18px;
+.container {
+    max-width: 520px;
+    margin: auto;
+    background: #0f172a;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
 }
 
-/* ─── Sections ─── */
-.sec{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-.sec:first-child{margin-top:0;padding-top:0;border-top:none}
-.sec-title{
-  font-size:10.5px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.8px;color:var(--muted);margin-bottom:8px;
-  display:flex;align-items:center;gap:7px;
-}
-.sec-title::before{
-  content:'';width:3px;height:11px;border-radius:2px;background:var(--sun);
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* ─── Field ─── */
-.field{margin:6px 0}
-.field-row{
-  display:flex;justify-content:space-between;align-items:baseline;
-  gap:8px;margin-bottom:2px;
-}
-.field-label{font-size:12px;color:var(--muted)}
-.field-val{
-  font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);
-  white-space:nowrap;
-}
-.field-hint{
-  display:flex;justify-content:space-between;
-  font-size:10px;color:var(--dim);margin-top:0;
-}
-.field-computed{
-  font-family:'JetBrains Mono',monospace;
-  font-size:14px;font-weight:700;color:var(--sun);
-  padding:6px 0 2px;
+h1 {
+    font-size: 1.4rem;
+    margin: 0;
 }
 
-/* ─── SLIDERS — large touch zone ─── */
-.slider-zone{
-  padding:var(--slider-pad) 8px;
-  margin:0 -8px;
-  touch-action:pan-y;          /* let vertical scroll pass through */
-  -webkit-touch-callout:none;
-  user-select:none;
-}
-input[type=range]{
-  -webkit-appearance:none;appearance:none;
-  width:100%;height:6px;border-radius:3px;
-  background:rgba(255,255,255,.1);
-  outline:none;cursor:pointer;
-  touch-action:none;           /* slider itself captures horizontal */
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:28px;height:28px;border-radius:50%;
-  background:var(--sun);
-  border:3px solid var(--bg);
-  box-shadow:0 2px 10px rgba(0,0,0,.5);
-  cursor:grab;
-}
-input[type=range]::-moz-range-thumb{
-  width:28px;height:28px;border-radius:50%;
-  background:var(--sun);border:3px solid var(--bg);
-  box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:grab;
-}
-input[type=range]:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.1)}
-input[type=range].warn::-webkit-slider-thumb,
-input[type=range].warn::-moz-range-thumb{background:var(--amber)}
-input[type=range].danger::-webkit-slider-thumb,
-input[type=range].danger::-moz-range-thumb{background:var(--red)}
-
-select{
-  width:100%;padding:10px 12px;border-radius:10px;
-  border:1px solid var(--line);background:var(--card2);
-  color:var(--text);font-family:inherit;font-size:13px;
-  outline:none;cursor:pointer;
+.flags button {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    margin-left: 6px;
 }
 
-/* ─── Pills ─── */
-.pills{display:flex;flex-wrap:wrap;gap:5px}
-.pill{
-  padding:8px 13px;border-radius:999px;
-  border:1px solid var(--line);background:transparent;
-  color:var(--muted);font-size:11.5px;font-family:inherit;
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-}
-.pill:hover{border-color:rgba(245,197,66,.3);color:var(--text)}
-.pill.active{
-  background:var(--sun-dim);border-color:rgba(245,197,66,.5);
-  color:var(--sun);font-weight:600;
-}
-/* Auto pill = blue accent */
-.pill.auto-active{
-  background:var(--blue-dim);border-color:rgba(96,165,250,.5);
-  color:var(--blue);font-weight:600;
+label {
+    display: block;
+    margin-top: 16px;
+    font-weight: 600;
 }
 
-/* ─── Split ─── */
-.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.split{grid-template-columns:1fr}}
-
-/* ─── Preset bar (auto-optimize) ─── */
-.preset-bar{
-  display:flex;gap:5px;flex-wrap:wrap;
-  margin-bottom:10px;
-}
-.preset-btn{
-  padding:7px 12px;border-radius:10px;
-  border:1px solid var(--line);background:rgba(96,165,250,.06);
-  color:var(--blue);font-size:11px;font-family:inherit;
-  cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:5px;
-}
-.preset-btn:hover{background:rgba(96,165,250,.14);border-color:rgba(96,165,250,.4)}
-.preset-btn.active{
-  background:var(--blue-dim);border-color:rgba(96,165,250,.6);
-  font-weight:700;
-}
-.preset-btn .icon{font-size:13px}
-
-/* ─── Auto-tilt badge ─── */
-.auto-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 8px;border-radius:6px;
-  background:var(--blue-dim);
-  color:var(--blue);font-size:10px;font-weight:600;
-  margin-left:6px;
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
 }
 
-/* ─── Right panel ─── */
-.sticky{position:sticky;top:14px}
-
-.status{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 14px;border-radius:999px;
-  font-size:12px;font-weight:600;border:1px solid var(--line);
-}
-.status .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.status.ok{background:var(--green-dim);border-color:rgba(52,211,153,.3);color:var(--green)}
-.status.ok .dot{background:var(--green)}
-.status.warn{background:var(--amber-dim);border-color:rgba(251,191,36,.3);color:var(--amber)}
-.status.warn .dot{background:var(--amber)}
-.status.danger{background:var(--red-dim);border-color:rgba(248,113,113,.3);color:var(--red)}
-.status.danger .dot{background:var(--red)}
-
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
-.kpi{
-  background:rgba(255,255,255,.03);border:1px solid var(--line);
-  border-radius:12px;padding:12px;
-}
-.kpi .t{font-size:10.5px;color:var(--muted);margin-bottom:3px}
-.kpi .n{font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-.5px}
-.kpi .s{font-size:10px;color:var(--dim);margin-top:3px}
-.kpi.hero{grid-column:1/-1;background:var(--sun-dim);border-color:rgba(245,197,66,.2)}
-.kpi.hero .n{color:var(--sun)}
-
-/* ─── Chart ─── */
-.chart-wrap{margin-top:12px}
-.chart-label{font-size:10.5px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.chart{
-  display:grid;grid-template-columns:repeat(12,1fr);gap:3px;
-  align-items:end;height:100px;
-  background:rgba(255,255,255,.02);border-radius:10px;
-  padding:6px 5px 0;
-}
-.bar-col{display:flex;flex-direction:column;align-items:center;height:100%}
-.bar{
-  width:100%;border-radius:3px 3px 0 0;
-  background:linear-gradient(180deg,var(--sun),#c88a10);
-  margin-top:auto;min-height:2px;transition:height .3s;
-}
-.bar-col.current .bar{
-  background:linear-gradient(180deg,#fff,var(--sun));
-  box-shadow:0 0 8px rgba(245,197,66,.4);
-}
-.bar-lbl{font-size:8px;color:var(--dim);margin-top:3px;font-family:'JetBrains Mono',monospace}
-.bar-kwh{
-  font-size:7.5px;color:var(--muted);margin-bottom:1px;
-  font-family:'JetBrains Mono',monospace;
-  opacity:0;transition:opacity .2s;
-}
-.bar-col:hover .bar-kwh,.bar-col.current .bar-kwh{opacity:1}
-
-/* ─── ROI ─── */
-.roi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
-@media(max-width:600px){.roi-grid{grid-template-columns:1fr}}
-.roi-item{
-  text-align:center;padding:10px;border-radius:10px;
-  border:1px solid var(--line);background:rgba(255,255,255,.02);
-}
-.roi-item .roi-n{
-  font-size:18px;font-weight:800;
-  font-family:'JetBrains Mono',monospace;color:var(--green);
-}
-.roi-item .roi-t{font-size:10px;color:var(--muted);margin-top:2px}
-
-/* ─── Note ─── */
-.note{
-  margin-top:10px;padding:9px 11px;border-radius:10px;
-  border:1px solid var(--line);background:rgba(255,255,255,.02);
-  font-size:11px;color:var(--muted);line-height:1.5;
+button.calc {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    background: #facc15;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
 }
 
-/* ─── Collapse ─── */
-.collapse-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;user-select:none;padding:6px 0;
+.result {
+    margin-top: 20px;
+    padding: 14px;
+    background: #020617;
+    border-radius: 10px;
+    line-height: 1.6;
 }
-.collapse-hdr .arrow{font-size:10px;color:var(--dim);transition:transform .2s}
-.collapse-hdr.open .arrow{transform:rotate(180deg)}
-.collapse-body{
-  max-height:0;overflow:hidden;
-  transition:max-height .3s ease, opacity .3s;opacity:0;
-}
-.collapse-body.open{max-height:600px;opacity:1}
-
-/* ─── Info tip ─── */
-.tip{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;border-radius:50%;
-  background:rgba(255,255,255,.06);color:var(--dim);
-  font-size:10px;font-weight:700;cursor:help;
-  margin-left:4px;vertical-align:middle;
-}
-.tip:hover{background:rgba(255,255,255,.12);color:var(--muted)}
-
-/* ─── Footer ─── */
-footer{
-  margin-top:28px;padding:18px 0;border-top:1px solid var(--line);
-  text-align:center;font-size:10.5px;color:var(--dim);
+.small {
+    opacity: 0.8;
+    font-size: 0.9rem;
 }
 </style>
 </head>
+
 <body>
-<div class="wrap">
+<div class="container">
 
 <header>
-  <div class="logo">
-    <div class="logo-icon">☀</div>
-    <div>
-      <h1>PV Калкулатор</h1>
-      <div class="sub">Соларен калкулатор за покриви и огради — ориентация, сезонност, засенчване, ROI</div>
+    <h1 id="title">☀️ Solar System Calculator</h1>
+    <div class="flags">
+        <button onclick="setLang('en')">🇬🇧</button>
+        <button onclick="setLang('bg')">🇧🇬</button>
+        <button onclick="setLang('de')">🇩🇪</button>
     </div>
-  </div>
 </header>
 
-<div class="grid">
+<label id="lblPower">System size (kWp)</label>
+<input type="number" id="power" value="5" step="0.1">
 
-<!-- ════════ LEFT: INPUTS ════════ -->
-<div class="card">
+<label id="lblLocation">Location</label>
+<select id="location">
+    <option value="1000">Northern Europe</option>
+    <option value="1200">Central Europe</option>
+    <option value="1400">Southern Europe</option>
+</select>
 
-  <!-- ── System ── -->
-  <div class="sec">
-    <div class="sec-title">Система</div>
-    <div class="split">
-      <div class="field">
-        <div class="field-label">Тип инсталация</div>
-        <select id="mode">
-          <option value="roof">Покрив / конструкция</option>
-          <option value="fence">Соларна ограда (вертикални)</option>
-        </select>
-      </div>
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Площ за панели</span>
-          <span class="field-val" id="areaVal">50 m²</span>
-        </div>
-        <div class="slider-zone"><input id="area" type="range" min="5" max="300" step="1" value="50"/></div>
-        <div class="field-hint"><span>5 m²</span><span>300 m²</span></div>
-      </div>
-    </div>
-    <div class="field-computed" id="kwpVal">10.0 kWp</div>
-  </div>
+<label id="lblPrice">Electricity price (€/kWh)</label>
+<input type="number" id="price" value="0.25" step="0.01">
 
-  <!-- ── Geography ── -->
-  <div class="sec">
-    <div class="sec-title">География и климат</div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Слънчева радиация <span class="tip" title="Средногодишна глобална хоризонтална радиация. За България: 3.5 (Сев.) до 4.3 (Юг/планини). Проверете в PVGIS.">?</span></span>
-        <span class="field-val" id="irrVal">3.90 kWh/m²/ден</span>
-      </div>
-      <div class="slider-zone"><input id="irr" type="range" min="3.50" max="4.30" step="0.01" value="3.90"/></div>
-      <div class="field-hint"><span>3.50 Сев. България</span><span>4.30 Юг/планини</span></div>
-    </div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Микроклимат <span class="tip" title="Корекция за локални условия: смог/мъгла намалява, чист планински въздух увеличава.">?</span></span>
-        <span class="field-val" id="microVal">0%</span>
-      </div>
-      <div class="slider-zone"><input id="micro" type="range" min="-20" max="20" step="1" value="0"/></div>
-      <div class="field-hint"><span>−20% смог/мъгла</span><span>+20% планински</span></div>
-    </div>
-  </div>
+<label id="lblCost">System cost (€)</label>
+<input type="number" id="cost" value="6500">
 
-  <!-- ── Shading ── -->
-  <div class="sec">
-    <div class="sec-title">Засенчване</div>
-    <div class="split">
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Далечно (хоризонт)</span>
-          <span class="field-val" id="shadeFarVal">0%</span>
-        </div>
-        <div class="slider-zone"><input id="shadeFar" type="range" min="0" max="15" step="1" value="0"/></div>
-        <div class="field-hint"><span>Равно</span><span>Планина</span></div>
-      </div>
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Близко (дърво/сграда)</span>
-          <span class="field-val" id="shadeNearVal">0%</span>
-        </div>
-        <div class="slider-zone"><input id="shadeNear" type="range" min="0" max="40" step="1" value="0"/></div>
-        <div class="field-hint"><span>0% чисто</span><span style="color:var(--red)">&gt;25% проблем</span></div>
-      </div>
-    </div>
-  </div>
+<button class="calc" onclick="calculate()" id="btnCalc">
+    Calculate
+</button>
 
-  <!-- ── Orientation: ROOF ── -->
-  <div class="sec" id="roofBlock">
-    <div class="sec-title">Ориентация — покрив</div>
-
-    <!-- Auto-optimize presets -->
-    <div class="field-label" style="margin-bottom:6px">Автоматична оптимизация <span class="tip" title="Задава оптимален наклон за избрания сценарий. Азимутът при 'Зимно слънцестоене' се измества леко на югозапад за максимално зимно производство.">?</span></div>
-    <div class="preset-bar" id="presetBar">
-      <button class="preset-btn" data-preset="manual"><span class="icon">✎</span> Ръчно</button>
-      <button class="preset-btn active" data-preset="annual"><span class="icon">◎</span> Годишен оптимум</button>
-      <button class="preset-btn" data-preset="summer"><span class="icon">☀</span> Лятно слънцест.</button>
-      <button class="preset-btn" data-preset="winter"><span class="icon">❄</span> Зимно слънцест.</button>
-      <button class="preset-btn" data-preset="equinox"><span class="icon">⚖</span> Равноденствие</button>
-    </div>
-    <div class="note" id="presetNote" style="margin-top:0;margin-bottom:8px;border-color:rgba(96,165,250,.2);background:rgba(96,165,250,.05);color:var(--blue)">
-      Годишен оптимум: азимут 180° (юг), наклон 36° — най-добър баланс за цялата година.
-    </div>
-
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Азимут</span>
-        <span class="field-val" id="azVal">180° Юг</span>
-      </div>
-      <div class="pills" id="azBtns">
-        <button class="pill" data-az="90">И 90°</button>
-        <button class="pill" data-az="120">ИЮИ 120°</button>
-        <button class="pill" data-az="150">ЮИ 150°</button>
-        <button class="pill active" data-az="180">Юг 180°</button>
-        <button class="pill" data-az="200">ЮЮЗ 200°</button>
-        <button class="pill" data-az="210">ЮЗ 210°</button>
-        <button class="pill" data-az="240">ЗЮЗ 240°</button>
-        <button class="pill" data-az="270">З 270°</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Наклон<span class="auto-badge" id="tiltAutoBadge" style="display:none">АВТО</span></span>
-        <span class="field-val" id="tiltVal">36°</span>
-      </div>
-      <div class="slider-zone"><input id="tilt" type="range" min="0" max="90" step="1" value="36"/></div>
-      <div class="field-hint"><span>0° плосък</span><span>36° оптимум</span><span>90° стена</span></div>
-    </div>
-
-    <!-- Second string (collapsed) -->
-    <div style="margin-top:8px">
-      <div class="collapse-hdr" id="str2Toggle" onclick="toggleStr2()">
-        <span class="field-label" style="font-weight:600">＋ Втори стринг (друга ориентация)</span>
-        <span class="arrow">▼</span>
-      </div>
-      <div class="collapse-body" id="str2Body">
-        <div class="field">
-          <div class="field-row">
-            <span class="field-label">Дял от мощността</span>
-            <span class="field-val" id="str2ShareVal">30%</span>
-          </div>
-          <div class="slider-zone"><input id="str2Share" type="range" min="10" max="60" step="1" value="30"/></div>
-        </div>
-        <div class="field">
-          <div class="field-label" style="margin-bottom:5px">Азимут стринг 2</div>
-          <div class="pills" id="az2Btns">
-            <button class="pill" data-az2="90">И 90°</button>
-            <button class="pill" data-az2="150">ЮИ 150°</button>
-            <button class="pill" data-az2="210">ЮЗ 210°</button>
-            <button class="pill active" data-az2="270">З 270°</button>
-          </div>
-        </div>
-        <div class="field">
-          <div class="field-row">
-            <span class="field-label">Наклон стринг 2</span>
-            <span class="field-val" id="tilt2Val">36°</span>
-          </div>
-          <div class="slider-zone"><input id="tilt2" type="range" min="0" max="90" step="1" value="36"/></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Orientation: FENCE ── -->
-  <div class="sec" id="fenceBlock" style="display:none">
-    <div class="sec-title">Ориентация — ограда</div>
-    <div class="field">
-      <div class="field-label" style="margin-bottom:5px">Посока на оградата</div>
-      <div class="pills" id="fenceBtns">
-        <button class="pill active" data-f="S">Юг</button>
-        <button class="pill" data-f="EW">Изток–Запад</button>
-        <button class="pill" data-f="SESW">ЮИ + ЮЗ</button>
-        <button class="pill" data-f="ALL">Всички посоки</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Бифациален бонус <span class="tip" title="Допълнително производство от задната страна на панела. Монофациални = 0%, бифациални = 5-25%.">?</span></span>
-        <span class="field-val" id="bifacialVal">10%</span>
-      </div>
-      <div class="slider-zone"><input id="bifacial" type="range" min="0" max="30" step="1" value="10"/></div>
-      <div class="field-hint"><span>0% моно</span><span>30% бифациален</span></div>
-    </div>
-  </div>
-
-  <!-- ── System losses ── -->
-  <div class="sec">
-    <div class="sec-title">Системни загуби</div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Кабели, инвертор, температура <span class="tip" title="Типични загуби: инвертор 3-5%, кабели 1-3%, температура 5-8%, замърсяване 2-4%. Общо 12-16% е нормално.">?</span></span>
-        <span class="field-val" id="sysLossVal">14%</span>
-      </div>
-      <div class="slider-zone"><input id="sysLoss" type="range" min="8" max="25" step="0.5" value="14"/></div>
-      <div class="field-hint"><span>8% премиум</span><span>14% типично</span><span>25% остаряла</span></div>
-    </div>
-  </div>
-
-  <!-- ── Finances ── -->
-  <div class="sec">
-    <div class="sec-title">Финанси</div>
-    <div class="split">
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Цена ел. енергия</span>
-          <span class="field-val" id="priceVal">0.12 €/kWh</span>
-        </div>
-        <div class="slider-zone"><input id="price" type="range" min="0.06" max="0.35" step="0.005" value="0.12"/></div>
-      </div>
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Цена на системата</span>
-          <span class="field-val" id="sysCostVal">900 €/kWp</span>
-        </div>
-        <div class="slider-zone"><input id="sysCost" type="range" min="500" max="1800" step="10" value="900"/></div>
-      </div>
-    </div>
-  </div>
-
+<div class="result" id="result">
+    <span class="small">Enter values and calculate.</span>
 </div>
 
-<!-- ════════ RIGHT: RESULTS ════════ -->
-<div>
-<div class="sticky">
-<div class="card">
-
-  <div id="statusPill" class="status ok">
-    <span class="dot"></span>
-    <span id="statusText">Добри условия</span>
-  </div>
-
-  <div class="kpis" style="margin-top:10px">
-    <div class="kpi hero">
-      <div class="t">Годишно производство</div>
-      <div class="n" id="outYear">—</div>
-      <div class="s" id="outYearNote">—</div>
-    </div>
-  </div>
-
-  <div class="kpis">
-    <div class="kpi">
-      <div class="t">Дневно (<span id="outMonthName">Юни</span>)</div>
-      <div class="n" id="outDay">—</div>
-    </div>
-    <div class="kpi">
-      <div class="t">Спестено / година</div>
-      <div class="n" id="outValue">—</div>
-    </div>
-  </div>
-  <div class="kpis">
-    <div class="kpi">
-      <div class="t">Общо загуби</div>
-      <div class="n" id="outLoss">—</div>
-      <div class="s" id="outLossNote">—</div>
-    </div>
-    <div class="kpi">
-      <div class="t">Ориент. фактор (<span id="outOrientMonth">Юни</span>)</div>
-      <div class="n" id="outOrient">—</div>
-      <div class="s" id="outOrientNote">—</div>
-    </div>
-  </div>
-
-  <!-- Monthly chart -->
-  <div class="chart-wrap">
-    <div class="chart-label">Месечно производство (kWh)</div>
-    <div class="chart" id="chart"></div>
-  </div>
-
-  <!-- Season selector for viewing -->
-  <div class="field" style="margin-top:8px">
-    <div class="field-row">
-      <span class="field-label">Преглед месец</span>
-      <span class="field-val" id="monthVal">Юни · ×1.38</span>
-    </div>
-    <div class="slider-zone" style="--slider-pad:12px"><input id="month" type="range" min="1" max="12" step="1" value="6"/></div>
-  </div>
-
-  <!-- ROI -->
-  <div class="chart-wrap">
-    <div class="chart-label">Възвръщаемост</div>
-    <div class="roi-grid">
-      <div class="roi-item">
-        <div class="roi-n" id="roiCost">—</div>
-        <div class="roi-t">Инвестиция</div>
-      </div>
-      <div class="roi-item">
-        <div class="roi-n" id="roiYears">—</div>
-        <div class="roi-t">Изплащане</div>
-      </div>
-      <div class="roi-item">
-        <div class="roi-n" id="roi25">—</div>
-        <div class="roi-t">Печалба 25 г.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="note" id="noteBox">
-    Годишното производство е сума от 12 месечни стойности. Ориентационният фактор отчита наклон и азимут за всеки месец поотделно.
-  </div>
-
 </div>
-</div>
-</div>
-
-</div><!-- grid -->
-
-<footer>
-  PV Калкулатор v6 · Приближителен модел · За прецизен инженеринг: <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" style="color:var(--blue);text-decoration:none" target="_blank">PVGIS</a> / PVsyst
-</footer>
-
-</div><!-- wrap -->
 
 <script>
-const $ = id => document.getElementById(id);
-
-/* ─── Constants ─── */
-const MN  = ['','Ян','Фев','Мар','Апр','Май','Юни','Юли','Авг','Сеп','Окт','Ное','Дек'];
-const MNF = ['','Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
-const DIM = [0,31,28,31,30,31,30,31,31,30,31,30,31];
-
-// Monthly irradiation factors — normalized so annual mean ≈ 1.0
-// Based on Sofia PVGIS data (seasonal: Win 2.0, Spr 5.0, Sum 7.0, Aut 3.3)
-const MF = [0, 0.46, 0.55, 0.82, 1.05, 1.19, 1.38, 1.42, 1.30, 1.05, 0.76, 0.50, 0.42];
-
-// Optimal tilt by month for latitude ~42°N (Sofia)
-// Dec/Jan steep to catch low sun; Jun/Jul shallow
-const OPT_TILT = [0, 60, 55, 45, 35, 28, 25, 27, 33, 42, 52, 58, 61];
-
-// Solar declination approximation by month (degrees)
-// Used for winter solstice azimuth correction
-const SOLAR_DECL = [0, -20.9, -13.0, -2.4, 9.4, 18.8, 23.1, 21.2, 13.5, 2.2, -9.6, -18.9, -23.0];
-
-// Fence orientation coefficients
-const FENCE_K = { S:0.55, EW:0.48, SESW:0.52, ALL:0.42 };
-
-/* ─── Presets ─── */
-const PRESETS = {
-  annual:  { az:180, tilt:36,  label:'Годишен оптимум: азимут 180° (юг), наклон 36° — най-добър баланс за цялата година.' },
-  summer:  { az:180, tilt:15,  label:'Лятно слънцестоене: азимут 180°, наклон 15° — слънцето е високо, плосък наклон улавя повече.' },
-  winter:  { az:195, tilt:60,  label:'Зимно слънцестоене: азимут 195° (ЮЮЗ), наклон 60° — слънцето е ниско, стръмен наклон + лек ЮЗ за следобедно слънце.' },
-  equinox: { az:180, tilt:42,  label:'Равноденствие: азимут 180°, наклон 42° — слънцето е на средна височина, наклон ≈ географска ширина.' },
+const text = {
+    en: {
+        title: "☀️ Solar System Calculator",
+        lblPower: "System size (kWp)",
+        lblLocation: "Location",
+        lblPrice: "Electricity price (€/kWh)",
+        lblCost: "System cost (€)",
+        btnCalc: "Calculate",
+        annual: "Annual production",
+        savings: "Annual savings",
+        payback: "Payback period"
+    },
+    bg: {
+        title: "☀️ Калкулатор за соларна система",
+        lblPower: "Мощност на системата (kWp)",
+        lblLocation: "Локация",
+        lblPrice: "Цена на тока (€/kWh)",
+        lblCost: "Цена на системата (€)",
+        btnCalc: "Изчисли",
+        annual: "Годишно производство",
+        savings: "Годишни спестявания",
+        payback: "Срок на изплащане"
+    },
+    de: {
+        title: "☀️ Solaranlagen-Rechner",
+        lblPower: "Systemleistung (kWp)",
+        lblLocation: "Standort",
+        lblPrice: "Strompreis (€/kWh)",
+        lblCost: "Anlagenkosten (€)",
+        btnCalc: "Berechnen",
+        annual: "Jahresproduktion",
+        savings: "Jährliche Ersparnis",
+        payback: "Amortisationszeit"
+    }
 };
 
-/* ─── State ─── */
-let az1 = 180, az2 = 270, fenceDir = 'S', str2Open = false;
-let activePreset = 'annual';
-let manualOverride = false;
+let lang = "en";
 
-/* ─── Orientation model ─── */
-function orientationFactor(azDeg, tiltDeg, month) {
-  const optTilt = OPT_TILT[month];
-
-  // Azimuth: cosine falloff from south, with diffuse floor
-  const azDelta = Math.min(90, Math.abs(azDeg - 180));
-  const azCos = Math.cos(azDelta * Math.PI / 180);
-  const azFactor = 0.65 + 0.35 * Math.max(0, azCos);
-
-  // Tilt: Gaussian falloff from monthly optimum
-  const tiltDelta = Math.abs(tiltDeg - optTilt);
-  const tiltFactor = Math.exp(-Math.log(2) * (tiltDelta / 25) ** 2);
-
-  // Combine direct + diffuse (25% floor)
-  const direct = azFactor * tiltFactor;
-  return 0.25 + 0.75 * direct;
+function setLang(l) {
+    lang = l;
+    document.getElementById("title").innerText = text[l].title;
+    lblPower.innerText = text[l].lblPower;
+    lblLocation.innerText = text[l].lblLocation;
+    lblPrice.innerText = text[l].lblPrice;
+    lblCost.innerText = text[l].lblCost;
+    btnCalc.innerText = text[l].btnCalc;
 }
 
-/* ─── Chart ─── */
-function initChart() {
-  const c = $('chart');
-  c.innerHTML = '';
-  for (let m = 1; m <= 12; m++) {
-    const col = document.createElement('div');
-    col.className = 'bar-col';
-    col.id = 'bc' + m;
-    col.innerHTML = `<div class="bar-kwh" id="bk${m}">0</div><div class="bar" id="be${m}" style="height:2px"></div><div class="bar-lbl">${MN[m]}</div>`;
-    c.appendChild(col);
-  }
+function calculate() {
+    const power = Number(powerInput.value);
+    const factor = Number(location.value);
+    const price = Number(priceInput.value);
+    const cost = Number(costInput.value);
+
+    const annual = power * factor;
+    const savings = annual * price;
+    const payback = cost / savings;
+
+    result.innerHTML = `
+        <strong>${text[lang].annual}:</strong> ${annual.toFixed(0)} kWh<br>
+        <strong>${text[lang].savings}:</strong> €${savings.toFixed(0)} / year<br>
+        <strong>${text[lang].payback}:</strong> ${payback.toFixed(1)} years
+    `;
 }
 
-/* ─── Apply preset ─── */
-function applyPreset(key) {
-  if (key === 'manual') {
-    activePreset = 'manual';
-    manualOverride = true;
-    $('tiltAutoBadge').style.display = 'none';
-    $('presetNote').textContent = 'Ръчен режим — задайте азимут и наклон по ваш избор.';
-  } else {
-    const p = PRESETS[key];
-    activePreset = key;
-    manualOverride = false;
+const powerInput = document.getElementById("power");
+const location = document.getElementById("location");
+const priceInput = document.getElementById("price");
+const costInput = document.getElementById("cost");
 
-    // Set azimuth
-    az1 = p.az;
-    // Highlight closest az pill
-    document.querySelectorAll('#azBtns .pill').forEach(b => {
-      b.classList.remove('active');
-      if (+b.dataset.az === az1) b.classList.add('active');
-    });
-
-    // Set tilt
-    $('tilt').value = p.tilt;
-
-    $('tiltAutoBadge').style.display = 'inline-flex';
-    $('presetNote').textContent = p.label;
-  }
-
-  // Highlight preset buttons
-  document.querySelectorAll('#presetBar .preset-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.preset === key);
-  });
-
-  recalc();
-}
-
-/* ─── Main calculation ─── */
-function recalc() {
-  const mode = $('mode').value;
-  const area = +$('area').value;
-  const kwp = area * 0.20;
-  const irrBase = +$('irr').value;
-  const microF = 1 + (+$('micro').value / 100);
-  const sysLoss = +$('sysLoss').value / 100;
-  const farShade = +$('shadeFar').value / 100;
-  const nearShade = +$('shadeNear').value / 100;
-  const selMonth = +$('month').value;
-  const price = +$('price').value;
-  const costPerKwp = +$('sysCost').value;
-
-  const prodF = (1 - sysLoss) * (1 - farShade) * (1 - nearShade);
-  const totalLossPct = (1 - prodF) * 100;
-
-  // Monthly production
-  const mKwh = [0];
-  let yearTotal = 0;
-
-  for (let m = 1; m <= 12; m++) {
-    const irr = irrBase * MF[m];
-    let daily;
-
-    if (mode === 'fence') {
-      const fK = FENCE_K[fenceDir] || 0.50;
-      const bif = 1 + (+$('bifacial').value / 100);
-      daily = kwp * irr * microF * prodF * fK * bif;
-    } else {
-      const t1 = +$('tilt').value;
-      const of1 = orientationFactor(az1, t1, m);
-      if (str2Open) {
-        const s2 = +$('str2Share').value / 100;
-        const t2 = +$('tilt2').value;
-        const of2 = orientationFactor(az2, t2, m);
-        daily = kwp * irr * microF * prodF * ((1 - s2) * of1 + s2 * of2);
-      } else {
-        daily = kwp * irr * microF * prodF * of1;
-      }
-    }
-    const mTotal = daily * DIM[m];
-    mKwh.push(mTotal);
-    yearTotal += mTotal;
-  }
-
-  const selDayProd = mKwh[selMonth] / DIM[selMonth];
-
-  // Orientation factor for display
-  let dispOrient = 1;
-  if (mode === 'fence') {
-    dispOrient = FENCE_K[fenceDir] || 0.50;
-  } else {
-    const of1 = orientationFactor(az1, +$('tilt').value, selMonth);
-    if (str2Open) {
-      const s2 = +$('str2Share').value / 100;
-      const of2 = orientationFactor(az2, +$('tilt2').value, selMonth);
-      dispOrient = (1 - s2) * of1 + s2 * of2;
-    } else {
-      dispOrient = of1;
-    }
-  }
-
-  // ─── UI update ───
-  $('areaVal').textContent = area + ' m²';
-  $('kwpVal').textContent = kwp.toFixed(1) + ' kWp';
-  $('irrVal').textContent = irrBase.toFixed(2) + ' kWh/m²/ден';
-  $('microVal').textContent = (+$('micro').value > 0 ? '+' : '') + $('micro').value + '%';
-  $('monthVal').textContent = MNF[selMonth] + ' · ×' + MF[selMonth].toFixed(2);
-  $('shadeFarVal').textContent = $('shadeFar').value + '%';
-  $('shadeNearVal').textContent = $('shadeNear').value + '%';
-  $('tiltVal').textContent = $('tilt').value + '°';
-  $('tilt2Val').textContent = $('tilt2').value + '°';
-  $('str2ShareVal').textContent = $('str2Share').value + '%';
-  $('bifacialVal').textContent = $('bifacial').value + '%';
-  $('sysLossVal').textContent = (+$('sysLoss').value).toFixed(1) + '%';
-  $('priceVal').textContent = price.toFixed(2) + ' €/kWh';
-  $('sysCostVal').textContent = costPerKwp + ' €/kWp';
-
-  // Az display
-  const azNames = {90:'И',120:'ИЮИ',150:'ЮИ',180:'Юг',195:'ЮЮЗ',200:'ЮЮЗ',210:'ЮЗ',225:'ЮЗ',240:'ЗЮЗ',270:'З'};
-  $('azVal').textContent = az1 + '° ' + (azNames[az1] || '');
-
-  // KPIs
-  $('outMonthName').textContent = MN[selMonth];
-  $('outOrientMonth').textContent = MN[selMonth];
-  $('outDay').textContent = selDayProd.toFixed(1) + ' kWh';
-  $('outYear').textContent = yearTotal >= 1000 ? (yearTotal / 1000).toFixed(2) + ' MWh' : yearTotal.toFixed(0) + ' kWh';
-  $('outYearNote').textContent = kwp.toFixed(1) + ' kWp · ' + (yearTotal / kwp).toFixed(0) + ' kWh/kWp';
-  $('outValue').textContent = (yearTotal * price).toFixed(0) + ' €';
-  $('outLoss').textContent = totalLossPct.toFixed(1) + '%';
-  $('outLossNote').textContent = 'сист. ' + (sysLoss * 100).toFixed(0) + '% + хориз. ' + (farShade * 100).toFixed(0) + '% + близко ' + (nearShade * 100).toFixed(0) + '%';
-  $('outOrient').textContent = (dispOrient * 100).toFixed(0) + '%';
-  $('outOrientNote').textContent = mode === 'fence'
-    ? 'ограда · ' + fenceDir
-    : 'аз. ' + az1 + '° · наклон ' + $('tilt').value + '°';
-
-  // ROI
-  const totalCost = kwp * costPerKwp;
-  const yearValue = yearTotal * price;
-  const payback = yearValue > 0 ? totalCost / yearValue : Infinity;
-  const profit25 = yearValue * 25 * 0.88 - totalCost;
-
-  $('roiCost').textContent = totalCost >= 10000 ? (totalCost / 1000).toFixed(1) + 'k €' : totalCost.toFixed(0) + ' €';
-  $('roiYears').textContent = payback < 100 ? payback.toFixed(1) + ' г.' : '—';
-  $('roi25').textContent = profit25 > 0
-    ? (profit25 >= 10000 ? (profit25 / 1000).toFixed(1) + 'k €' : profit25.toFixed(0) + ' €')
-    : '—';
-
-  // Chart
-  const maxKwh = Math.max(...mKwh.slice(1));
-  for (let m = 1; m <= 12; m++) {
-    const pct = maxKwh > 0 ? (mKwh[m] / maxKwh * 88) : 0;
-    $('be' + m).style.height = Math.max(2, pct) + '%';
-    $('bk' + m).textContent = mKwh[m].toFixed(0);
-    $('bc' + m).classList.toggle('current', m === selMonth);
-  }
-
-  // Status
-  const pill = $('statusPill'), st = $('statusText');
-  pill.className = 'status';
-  if (nearShade > 0.25) { pill.classList.add('danger'); st.textContent = 'Високо засенчване — проблемно'; }
-  else if (nearShade > 0.10 || farShade > 0.07) { pill.classList.add('warn'); st.textContent = 'Засенчване над средното'; }
-  else if (dispOrient < 0.7) { pill.classList.add('warn'); st.textContent = 'Неоптимална ориентация'; }
-  else { pill.classList.add('ok'); st.textContent = 'Добри условия'; }
-
-  // Shade slider coloring
-  const nearEl = $('shadeNear');
-  nearEl.classList.remove('warn', 'danger');
-  if (nearShade > 0.25) nearEl.classList.add('danger');
-  else if (nearShade > 0.10) nearEl.classList.add('warn');
-}
-
-/* ─── Events ─── */
-
-function toggleStr2() {
-  str2Open = !str2Open;
-  $('str2Toggle').classList.toggle('open', str2Open);
-  $('str2Body').classList.toggle('open', str2Open);
-  recalc();
-}
-
-// All sliders
-['area','irr','micro','month','shadeFar','shadeNear','tilt','tilt2','str2Share','bifacial','sysLoss','price','sysCost'].forEach(id => {
-  $(id).addEventListener('input', () => {
-    // If user touches tilt or az — switch to manual
-    if ((id === 'tilt') && activePreset !== 'manual') {
-      activePreset = 'manual';
-      manualOverride = true;
-      document.querySelectorAll('#presetBar .preset-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.preset === 'manual');
-      });
-      $('tiltAutoBadge').style.display = 'none';
-      $('presetNote').textContent = 'Ръчен режим — задайте азимут и наклон по ваш избор.';
-    }
-    recalc();
-  });
-});
-
-// Mode toggle
-$('mode').addEventListener('change', () => {
-  const fence = $('mode').value === 'fence';
-  $('roofBlock').style.display = fence ? 'none' : '';
-  $('fenceBlock').style.display = fence ? '' : 'none';
-  recalc();
-});
-
-// Preset buttons
-document.querySelectorAll('#presetBar .preset-btn').forEach(b => {
-  b.onclick = () => applyPreset(b.dataset.preset);
-});
-
-// Azimuth pills — also switches to manual
-document.querySelectorAll('#azBtns .pill').forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll('#azBtns .pill').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    az1 = +b.dataset.az;
-    // Switch to manual if a preset was active
-    if (activePreset !== 'manual') {
-      activePreset = 'manual';
-      manualOverride = true;
-      document.querySelectorAll('#presetBar .preset-btn').forEach(p => {
-        p.classList.toggle('active', p.dataset.preset === 'manual');
-      });
-      $('tiltAutoBadge').style.display = 'none';
-      $('presetNote').textContent = 'Ръчен режим — задайте азимут и наклон по ваш избор.';
-    }
-    recalc();
-  };
-});
-
-document.querySelectorAll('#az2Btns .pill').forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll('#az2Btns .pill').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    az2 = +b.dataset.az2;
-    recalc();
-  };
-});
-
-document.querySelectorAll('#fenceBtns .pill').forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll('#fenceBtns .pill').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    fenceDir = b.dataset.f;
-    recalc();
-  };
-});
-
-/* ─── Init ─── */
-initChart();
-applyPreset('annual');
+setLang("en");
 </script>
 </body>
 </html>
