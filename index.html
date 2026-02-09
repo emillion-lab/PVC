@@ -1,925 +1,293 @@
-<!doctype html>
-<html lang="bg">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>PV Калкулатор — България</title>
+<!doctype html><html lang="bg"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>PV Калкулатор</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #080c14;
-  --card: #0e1525;
-  --card2: #131b2e;
-  --text: #e4ebf8;
-  --muted: #7e8da6;
-  --dim: #4a5568;
-  --line: rgba(255,255,255,.08);
-  --sun: #f5c542;
-  --sun-dim: rgba(245,197,66,.15);
-  --green: #34d399;
-  --green-dim: rgba(52,211,153,.12);
-  --amber: #fbbf24;
-  --amber-dim: rgba(251,191,36,.12);
-  --red: #f87171;
-  --red-dim: rgba(248,113,113,.12);
-  --blue: #60a5fa;
-  --blue-dim: rgba(96,165,250,.12);
-  --slider-pad: 18px; /* extra vertical padding around sliders for touch */
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  font-family:'DM Sans',system-ui,sans-serif;
-  background:var(--bg);color:var(--text);
-  line-height:1.5;min-height:100vh;
-  overscroll-behavior-y:contain;
-}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 60% 50% at 20% 10%,rgba(245,197,66,.04),transparent),
-    radial-gradient(ellipse 50% 40% at 80% 80%,rgba(96,165,250,.03),transparent);
-}
-
-.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 16px}
-
-/* ─── Header ─── */
-header{padding:24px 0 8px}
-.logo{display:flex;align-items:center;gap:12px;margin-bottom:4px}
-.logo-icon{
-  width:38px;height:38px;border-radius:11px;
-  background:linear-gradient(135deg,var(--sun),#e88d0c);
-  display:grid;place-items:center;font-size:19px;
-  box-shadow:0 4px 16px rgba(245,197,66,.25);
-}
-h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
-.sub{color:var(--muted);font-size:12.5px;max-width:560px}
-
-/* ─── Grid ─── */
-.grid{display:grid;grid-template-columns:1fr 400px;gap:14px;margin-top:14px}
-@media(max-width:980px){.grid{grid-template-columns:1fr}}
-
-.card{
-  background:var(--card);border:1px solid var(--line);
-  border-radius:16px;padding:18px;
-}
-
-/* ─── Sections ─── */
-.sec{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-.sec:first-child{margin-top:0;padding-top:0;border-top:none}
-.sec-title{
-  font-size:10.5px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.8px;color:var(--muted);margin-bottom:8px;
-  display:flex;align-items:center;gap:7px;
-}
-.sec-title::before{
-  content:'';width:3px;height:11px;border-radius:2px;background:var(--sun);
-}
-
-/* ─── Field ─── */
-.field{margin:6px 0}
-.field-row{
-  display:flex;justify-content:space-between;align-items:baseline;
-  gap:8px;margin-bottom:2px;
-}
-.field-label{font-size:12px;color:var(--muted)}
-.field-val{
-  font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);
-  white-space:nowrap;
-}
-.field-hint{
-  display:flex;justify-content:space-between;
-  font-size:10px;color:var(--dim);margin-top:0;
-}
-.field-computed{
-  font-family:'JetBrains Mono',monospace;
-  font-size:14px;font-weight:700;color:var(--sun);
-  padding:6px 0 2px;
-}
-
-/* ─── SLIDERS — large touch zone ─── */
-.slider-zone{
-  padding:var(--slider-pad) 8px;
-  margin:0 -8px;
-  touch-action:pan-y;          /* let vertical scroll pass through */
-  -webkit-touch-callout:none;
-  user-select:none;
-}
-input[type=range]{
-  -webkit-appearance:none;appearance:none;
-  width:100%;height:6px;border-radius:3px;
-  background:rgba(255,255,255,.1);
-  outline:none;cursor:pointer;
-  touch-action:none;           /* slider itself captures horizontal */
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:28px;height:28px;border-radius:50%;
-  background:var(--sun);
-  border:3px solid var(--bg);
-  box-shadow:0 2px 10px rgba(0,0,0,.5);
-  cursor:grab;
-}
-input[type=range]::-moz-range-thumb{
-  width:28px;height:28px;border-radius:50%;
-  background:var(--sun);border:3px solid var(--bg);
-  box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:grab;
-}
-input[type=range]:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.1)}
-input[type=range].warn::-webkit-slider-thumb,
-input[type=range].warn::-moz-range-thumb{background:var(--amber)}
-input[type=range].danger::-webkit-slider-thumb,
-input[type=range].danger::-moz-range-thumb{background:var(--red)}
-
-select{
-  width:100%;padding:10px 12px;border-radius:10px;
-  border:1px solid var(--line);background:var(--card2);
-  color:var(--text);font-family:inherit;font-size:13px;
-  outline:none;cursor:pointer;
-}
-
-/* ─── Pills ─── */
+:root{--bg:#080c14;--card:#0d1422;--card2:#131b2e;--text:#e4ebf8;--muted:#8694ad;--dim:#4f5d73;--line:rgba(255,255,255,.07);--sun:#f5c542;--sun-dim:rgba(245,197,66,.12);--green:#34d399;--green-dim:rgba(52,211,153,.1);--amber:#fbbf24;--amber-dim:rgba(251,191,36,.1);--red:#f87171;--red-dim:rgba(248,113,113,.1);--blue:#60a5fa;--blue-dim:rgba(96,165,250,.1);--cyan:#22d3ee}
+*{box-sizing:border-box;margin:0;padding:0}html{-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100dvh;overscroll-behavior-y:contain}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 55% 45% at 15% 8%,rgba(245,197,66,.03),transparent),radial-gradient(ellipse 45% 35% at 85% 85%,rgba(96,165,250,.02),transparent)}
+.wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:0 14px 20px}
+header{padding:16px 0 6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--sun),#d4890a);display:grid;place-items:center;font-size:18px;box-shadow:0 3px 14px rgba(245,197,66,.22)}
+h1{font-size:19px;font-weight:700;letter-spacing:-.3px}.sub{color:var(--muted);font-size:12px}
+.hdr-btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lang-toggle{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.lang-btn{padding:7px 14px;font-size:13px;cursor:pointer;background:transparent;color:var(--muted);border:none;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all .15s}
+.lang-btn:hover{background:rgba(255,255,255,.04)}.lang-btn.active{background:rgba(245,197,66,.1);color:var(--sun);font-weight:600}
+.reset-btn{padding:7px 14px;font-size:12px;cursor:pointer;background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.2);border-radius:9px;font-family:inherit;transition:all .15s}
+.reset-btn:hover{background:rgba(248,113,113,.15)}
+.grid3{display:grid;grid-template-columns:1fr 1fr 480px;gap:14px;margin-top:14px;align-items:start}
+@media(max-width:1200px){.grid3{grid-template-columns:1fr 1fr}.grid3>.col-r{grid-column:1/-1}}
+@media(max-width:740px){.grid3{grid-template-columns:1fr}.col-r .card{position:static!important}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.sec{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.sec:first-child{margin-top:0;padding-top:0;border-top:none}
+.stitle{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.stitle::before{content:'';width:3px;height:10px;border-radius:2px;background:var(--sun)}
+.fld{margin:6px 0}.frow{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-bottom:2px}
+.flbl{font-size:12px;color:var(--muted)}.fval{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);white-space:nowrap}
+.fhint{display:flex;justify-content:space-between;font-size:9.5px;color:var(--dim)}
+.fcomp{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--sun);padding:4px 0}
+.fsmall{font-size:10px;color:var(--dim);margin-top:1px}
+.szone{position:relative;padding:18px 14px;margin:0 -14px}
+.szone.big{padding:22px 14px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.09);outline:none;cursor:pointer;touch-action:auto}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--sun);border:3px solid var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:grab}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--sun);border:3px solid var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:grab}
+input[type=range].warn::-webkit-slider-thumb,input[type=range].warn::-moz-range-thumb{background:var(--amber);box-shadow:0 0 12px rgba(251,191,36,.5)}
+input[type=range].danger::-webkit-slider-thumb,input[type=range].danger::-moz-range-thumb{background:var(--red);box-shadow:0 0 14px rgba(248,113,113,.6)}
+.fval.warn-text{color:var(--amber);text-shadow:0 0 8px rgba(251,191,36,.4)}.fval.danger-text{color:var(--red);text-shadow:0 0 8px rgba(248,113,113,.5)}
+select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-family:inherit;font-size:13px;outline:none}
 .pills{display:flex;flex-wrap:wrap;gap:5px}
-.pill{
-  padding:8px 13px;border-radius:999px;
-  border:1px solid var(--line);background:transparent;
-  color:var(--muted);font-size:11.5px;font-family:inherit;
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-}
-.pill:hover{border-color:rgba(245,197,66,.3);color:var(--text)}
-.pill.active{
-  background:var(--sun-dim);border-color:rgba(245,197,66,.5);
-  color:var(--sun);font-weight:600;
-}
-/* Auto pill = blue accent */
-.pill.auto-active{
-  background:var(--blue-dim);border-color:rgba(96,165,250,.5);
-  color:var(--blue);font-weight:600;
-}
-
-/* ─── Split ─── */
+.pill{padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:11.5px;font-family:inherit;cursor:pointer;transition:all .12s;white-space:nowrap}
+.pill:hover{border-color:rgba(245,197,66,.25);color:var(--text)}.pill.on{background:var(--sun-dim);border-color:rgba(245,197,66,.45);color:var(--sun);font-weight:600}
+.pbtn{padding:6px 10px;border-radius:9px;border:1px solid var(--line);background:rgba(96,165,250,.04);color:var(--blue);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;display:inline-flex;align-items:center;gap:4px}
+.pbtn:hover{background:rgba(96,165,250,.1)}.pbtn.on{background:var(--blue-dim);border-color:rgba(96,165,250,.4);font-weight:700}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.split{grid-template-columns:1fr}}
-
-/* ─── Preset bar (auto-optimize) ─── */
-.preset-bar{
-  display:flex;gap:5px;flex-wrap:wrap;
-  margin-bottom:10px;
-}
-.preset-btn{
-  padding:7px 12px;border-radius:10px;
-  border:1px solid var(--line);background:rgba(96,165,250,.06);
-  color:var(--blue);font-size:11px;font-family:inherit;
-  cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:5px;
-}
-.preset-btn:hover{background:rgba(96,165,250,.14);border-color:rgba(96,165,250,.4)}
-.preset-btn.active{
-  background:var(--blue-dim);border-color:rgba(96,165,250,.6);
-  font-weight:700;
-}
-.preset-btn .icon{font-size:13px}
-
-/* ─── Auto-tilt badge ─── */
-.auto-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 8px;border-radius:6px;
-  background:var(--blue-dim);
-  color:var(--blue);font-size:10px;font-weight:600;
-  margin-left:6px;
-}
-
-/* ─── Right panel ─── */
-.sticky{position:sticky;top:14px}
-
-.status{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 14px;border-radius:999px;
-  font-size:12px;font-weight:600;border:1px solid var(--line);
-}
-.status .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.status.ok{background:var(--green-dim);border-color:rgba(52,211,153,.3);color:var(--green)}
-.status.ok .dot{background:var(--green)}
-.status.warn{background:var(--amber-dim);border-color:rgba(251,191,36,.3);color:var(--amber)}
-.status.warn .dot{background:var(--amber)}
-.status.danger{background:var(--red-dim);border-color:rgba(248,113,113,.3);color:var(--red)}
-.status.danger .dot{background:var(--red)}
-
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
-.kpi{
-  background:rgba(255,255,255,.03);border:1px solid var(--line);
-  border-radius:12px;padding:12px;
-}
-.kpi .t{font-size:10.5px;color:var(--muted);margin-bottom:3px}
-.kpi .n{font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-.5px}
-.kpi .s{font-size:10px;color:var(--dim);margin-top:3px}
-.kpi.hero{grid-column:1/-1;background:var(--sun-dim);border-color:rgba(245,197,66,.2)}
-.kpi.hero .n{color:var(--sun)}
-
-/* ─── Chart ─── */
-.chart-wrap{margin-top:12px}
-.chart-label{font-size:10.5px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.chart{
-  display:grid;grid-template-columns:repeat(12,1fr);gap:3px;
-  align-items:end;height:100px;
-  background:rgba(255,255,255,.02);border-radius:10px;
-  padding:6px 5px 0;
-}
-.bar-col{display:flex;flex-direction:column;align-items:center;height:100%}
-.bar{
-  width:100%;border-radius:3px 3px 0 0;
-  background:linear-gradient(180deg,var(--sun),#c88a10);
-  margin-top:auto;min-height:2px;transition:height .3s;
-}
-.bar-col.current .bar{
-  background:linear-gradient(180deg,#fff,var(--sun));
-  box-shadow:0 0 8px rgba(245,197,66,.4);
-}
-.bar-lbl{font-size:8px;color:var(--dim);margin-top:3px;font-family:'JetBrains Mono',monospace}
-.bar-kwh{
-  font-size:7.5px;color:var(--muted);margin-bottom:1px;
-  font-family:'JetBrains Mono',monospace;
-  opacity:0;transition:opacity .2s;
-}
-.bar-col:hover .bar-kwh,.bar-col.current .bar-kwh{opacity:1}
-
-/* ─── ROI ─── */
-.roi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
-@media(max-width:600px){.roi-grid{grid-template-columns:1fr}}
-.roi-item{
-  text-align:center;padding:10px;border-radius:10px;
-  border:1px solid var(--line);background:rgba(255,255,255,.02);
-}
-.roi-item .roi-n{
-  font-size:18px;font-weight:800;
-  font-family:'JetBrains Mono',monospace;color:var(--green);
-}
-.roi-item .roi-t{font-size:10px;color:var(--muted);margin-top:2px}
-
-/* ─── Note ─── */
-.note{
-  margin-top:10px;padding:9px 11px;border-radius:10px;
-  border:1px solid var(--line);background:rgba(255,255,255,.02);
-  font-size:11px;color:var(--muted);line-height:1.5;
-}
-
-/* ─── Collapse ─── */
-.collapse-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;user-select:none;padding:6px 0;
-}
-.collapse-hdr .arrow{font-size:10px;color:var(--dim);transition:transform .2s}
-.collapse-hdr.open .arrow{transform:rotate(180deg)}
-.collapse-body{
-  max-height:0;overflow:hidden;
-  transition:max-height .3s ease, opacity .3s;opacity:0;
-}
-.collapse-body.open{max-height:600px;opacity:1}
-
-/* ─── Info tip ─── */
-.tip{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;border-radius:50%;
-  background:rgba(255,255,255,.06);color:var(--dim);
-  font-size:10px;font-weight:700;cursor:help;
-  margin-left:4px;vertical-align:middle;
-}
+@media(max-width:500px){.split{grid-template-columns:1fr}}
+.tip{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.07);color:var(--dim);font-size:10px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle;position:relative;user-select:none;transition:all .15s}
 .tip:hover{background:rgba(255,255,255,.12);color:var(--muted)}
-
-/* ─── Footer ─── */
-footer{
-  margin-top:28px;padding:18px 0;border-top:1px solid var(--line);
-  text-align:center;font-size:10.5px;color:var(--dim);
-}
-</style>
-</head>
-<body>
-<div class="wrap">
-
+.tip-box{display:none;position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);width:280px;padding:12px 14px;border-radius:11px;background:#1a2438;border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:12px;line-height:1.55;font-weight:400;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#1a2438}
+.tip.open .tip-box{display:block}.tip.open{background:rgba(96,165,250,.2);color:var(--blue)}
+@media(max-width:740px){.tip-box{left:auto;right:-10px;transform:none;width:250px}.tip-box::after{left:auto;right:16px;transform:none}}
+.chdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:5px 0}
+.chdr .ar{font-size:9px;color:var(--dim);transition:transform .2s}.chdr.open .ar{transform:rotate(180deg)}
+.cbody{max-height:0;overflow:hidden;transition:max-height .3s,opacity .2s;opacity:0}.cbody.open{max-height:800px;opacity:1}
+.col-r .card{position:sticky;top:12px}
+.status{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line)}
+.status .dot{width:8px;height:8px;border-radius:50%}
+.status.ok{background:var(--green-dim);border-color:rgba(52,211,153,.25);color:var(--green)}.status.ok .dot{background:var(--green)}
+.status.warn{background:var(--amber-dim);border-color:rgba(251,191,36,.25);color:var(--amber)}.status.warn .dot{background:var(--amber)}
+.status.danger{background:var(--red-dim);border-color:rgba(248,113,113,.25);color:var(--red)}.status.danger .dot{background:var(--red)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.kpi{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+.kpi .t{font-size:10.5px;color:var(--muted);margin-bottom:2px}.kpi .n{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-.4px}
+.kpi .s{font-size:9.5px;color:var(--dim);margin-top:2px}
+.kpi.hero{grid-column:1/-1;background:var(--sun-dim);border-color:rgba(245,197,66,.15)}.kpi.hero .n{color:var(--sun)}
+.chwrap{margin-top:10px}.chlbl{font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.legend-row{display:flex;gap:12px;margin-top:4px}.legend-row span{font-size:9.5px;display:flex;align-items:center;gap:3px}.ldot{width:10px;height:5px;border-radius:1px}
+.sbar{display:flex;height:22px;border-radius:6px;overflow:hidden;margin-top:5px}.sseg{display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--bg);transition:width .3s;min-width:30px}
+.roi{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:7px}@media(max-width:500px){.roi{grid-template-columns:1fr 1fr}}
+.roi-i{text-align:center;padding:9px 5px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.015)}
+.roi-i .rn{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--green)}.roi-i .rt{font-size:9.5px;color:var(--muted);margin-top:1px}
+.note{margin-top:8px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.015);font-size:10.5px;color:var(--muted);line-height:1.5}
+.note.info{border-color:rgba(96,165,250,.15);background:rgba(96,165,250,.03);color:var(--blue)}
+.mdetail{margin-top:6px;padding:10px 12px;border-radius:10px;background:rgba(245,197,66,.04);border:1px solid rgba(245,197,66,.1);font-size:11px;line-height:1.7;display:none}
+.mdetail.show{display:block}
+.mdetail .md-title{font-weight:700;color:var(--sun);margin-bottom:3px;display:flex;justify-content:space-between;align-items:center}
+.mdetail .md-close{cursor:pointer;color:var(--dim);font-size:14px}
+.mdetail .md-row{display:flex;justify-content:space-between;color:var(--muted)}
+.mdetail .md-row .md-v{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px}
+.chart-bar-col{cursor:pointer;transition:opacity .15s}.chart-bar-col:hover{opacity:.85}
+footer{margin-top:20px;padding:14px 0;border-top:1px solid var(--line);text-align:center;font-size:10px;color:var(--dim)}footer a{color:var(--blue);text-decoration:none}
+</style></head><body><div class="wrap">
 <header>
-  <div class="logo">
-    <div class="logo-icon">☀</div>
-    <div>
-      <h1>PV Калкулатор</h1>
-      <div class="sub">Соларен калкулатор за покриви и огради — ориентация, сезонност, засенчване, ROI</div>
-    </div>
-  </div>
+  <div class="logo"><div class="logo-icon">☀</div><div><h1 data-t="title">PV Калкулатор — България</h1><div class="sub" data-t="subtitle">Производство · Консумация · Батерия · Възвръщаемост</div></div></div>
+  <div class="hdr-btns"><button class="reset-btn" onclick="resetAll()" data-t="btn_reset">↺ Нулиране</button>
+    <div class="lang-toggle"><button class="lang-btn active" data-lang="bg"><svg width="20" height="14" viewBox="0 0 20 14"><rect width="20" height="4.67" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#00966E"/><rect y="9.33" width="20" height="4.67" fill="#D62612"/></svg> BG</button><button class="lang-btn" data-lang="en"><svg width="20" height="14" viewBox="0 0 20 14"><rect fill="#012169" width="20" height="14"/><path d="M0,0L20,14M20,0L0,14" stroke="#fff" stroke-width="2.5"/><path d="M0,0L20,14M20,0L0,14" stroke="#C8102E" stroke-width="1.3"/><path d="M10,0V14M0,7H20" stroke="#fff" stroke-width="4"/><path d="M10,0V14M0,7H20" stroke="#C8102E" stroke-width="2.2"/></svg> EN</button></div></div>
 </header>
-
-<div class="grid">
-
-<!-- ════════ LEFT: INPUTS ════════ -->
+<div class="grid3">
+<!-- КОЛОНА 1: СИСТЕМА + ОРИЕНТАЦИЯ -->
 <div class="card">
-
-  <!-- ── System ── -->
-  <div class="sec">
-    <div class="sec-title">Система</div>
-    <div class="split">
-      <div class="field">
-        <div class="field-label">Тип инсталация</div>
-        <select id="mode">
-          <option value="roof">Покрив / конструкция</option>
-          <option value="fence">Соларна ограда (вертикални)</option>
-        </select>
-      </div>
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Площ за панели</span>
-          <span class="field-val" id="areaVal">50 m²</span>
-        </div>
-        <div class="slider-zone"><input id="area" type="range" min="5" max="300" step="1" value="50"/></div>
-        <div class="field-hint"><span>5 m²</span><span>300 m²</span></div>
-      </div>
-    </div>
-    <div class="field-computed" id="kwpVal">10.0 kWp</div>
-  </div>
-
-  <!-- ── Geography ── -->
-  <div class="sec">
-    <div class="sec-title">География и климат</div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Слънчева радиация <span class="tip" title="Средногодишна глобална хоризонтална радиация. За България: 3.5 (Сев.) до 4.3 (Юг/планини). Проверете в PVGIS.">?</span></span>
-        <span class="field-val" id="irrVal">3.90 kWh/m²/ден</span>
-      </div>
-      <div class="slider-zone"><input id="irr" type="range" min="3.50" max="4.30" step="0.01" value="3.90"/></div>
-      <div class="field-hint"><span>3.50 Сев. България</span><span>4.30 Юг/планини</span></div>
-    </div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Микроклимат <span class="tip" title="Корекция за локални условия: смог/мъгла намалява, чист планински въздух увеличава.">?</span></span>
-        <span class="field-val" id="microVal">0%</span>
-      </div>
-      <div class="slider-zone"><input id="micro" type="range" min="-20" max="20" step="1" value="0"/></div>
-      <div class="field-hint"><span>−20% смог/мъгла</span><span>+20% планински</span></div>
-    </div>
-  </div>
-
-  <!-- ── Shading ── -->
-  <div class="sec">
-    <div class="sec-title">Засенчване</div>
-    <div class="split">
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Далечно (хоризонт)</span>
-          <span class="field-val" id="shadeFarVal">0%</span>
-        </div>
-        <div class="slider-zone"><input id="shadeFar" type="range" min="0" max="15" step="1" value="0"/></div>
-        <div class="field-hint"><span>Равно</span><span>Планина</span></div>
-      </div>
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Близко (дърво/сграда)</span>
-          <span class="field-val" id="shadeNearVal">0%</span>
-        </div>
-        <div class="slider-zone"><input id="shadeNear" type="range" min="0" max="40" step="1" value="0"/></div>
-        <div class="field-hint"><span>0% чисто</span><span style="color:var(--red)">&gt;25% проблем</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Orientation: ROOF ── -->
-  <div class="sec" id="roofBlock">
-    <div class="sec-title">Ориентация — покрив</div>
-
-    <!-- Auto-optimize presets -->
-    <div class="field-label" style="margin-bottom:6px">Автоматична оптимизация <span class="tip" title="Задава оптимален наклон за избрания сценарий. Азимутът при 'Зимно слънцестоене' се измества леко на югозапад за максимално зимно производство.">?</span></div>
-    <div class="preset-bar" id="presetBar">
-      <button class="preset-btn" data-preset="manual"><span class="icon">✎</span> Ръчно</button>
-      <button class="preset-btn active" data-preset="annual"><span class="icon">◎</span> Годишен оптимум</button>
-      <button class="preset-btn" data-preset="summer"><span class="icon">☀</span> Лятно слънцест.</button>
-      <button class="preset-btn" data-preset="winter"><span class="icon">❄</span> Зимно слънцест.</button>
-      <button class="preset-btn" data-preset="equinox"><span class="icon">⚖</span> Равноденствие</button>
-    </div>
-    <div class="note" id="presetNote" style="margin-top:0;margin-bottom:8px;border-color:rgba(96,165,250,.2);background:rgba(96,165,250,.05);color:var(--blue)">
-      Годишен оптимум: азимут 180° (юг), наклон 36° — най-добър баланс за цялата година.
-    </div>
-
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Азимут</span>
-        <span class="field-val" id="azVal">180° Юг</span>
-      </div>
-      <div class="pills" id="azBtns">
-        <button class="pill" data-az="90">И 90°</button>
-        <button class="pill" data-az="120">ИЮИ 120°</button>
-        <button class="pill" data-az="150">ЮИ 150°</button>
-        <button class="pill active" data-az="180">Юг 180°</button>
-        <button class="pill" data-az="200">ЮЮЗ 200°</button>
-        <button class="pill" data-az="210">ЮЗ 210°</button>
-        <button class="pill" data-az="240">ЗЮЗ 240°</button>
-        <button class="pill" data-az="270">З 270°</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Наклон<span class="auto-badge" id="tiltAutoBadge" style="display:none">АВТО</span></span>
-        <span class="field-val" id="tiltVal">36°</span>
-      </div>
-      <div class="slider-zone"><input id="tilt" type="range" min="0" max="90" step="1" value="36"/></div>
-      <div class="field-hint"><span>0° плосък</span><span>36° оптимум</span><span>90° стена</span></div>
-    </div>
-
-    <!-- Second string (collapsed) -->
-    <div style="margin-top:8px">
-      <div class="collapse-hdr" id="str2Toggle" onclick="toggleStr2()">
-        <span class="field-label" style="font-weight:600">＋ Втори стринг (друга ориентация)</span>
-        <span class="arrow">▼</span>
-      </div>
-      <div class="collapse-body" id="str2Body">
-        <div class="field">
-          <div class="field-row">
-            <span class="field-label">Дял от мощността</span>
-            <span class="field-val" id="str2ShareVal">30%</span>
-          </div>
-          <div class="slider-zone"><input id="str2Share" type="range" min="10" max="60" step="1" value="30"/></div>
-        </div>
-        <div class="field">
-          <div class="field-label" style="margin-bottom:5px">Азимут стринг 2</div>
-          <div class="pills" id="az2Btns">
-            <button class="pill" data-az2="90">И 90°</button>
-            <button class="pill" data-az2="150">ЮИ 150°</button>
-            <button class="pill" data-az2="210">ЮЗ 210°</button>
-            <button class="pill active" data-az2="270">З 270°</button>
-          </div>
-        </div>
-        <div class="field">
-          <div class="field-row">
-            <span class="field-label">Наклон стринг 2</span>
-            <span class="field-val" id="tilt2Val">36°</span>
-          </div>
-          <div class="slider-zone"><input id="tilt2" type="range" min="0" max="90" step="1" value="36"/></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Orientation: FENCE ── -->
-  <div class="sec" id="fenceBlock" style="display:none">
-    <div class="sec-title">Ориентация — ограда</div>
-    <div class="field">
-      <div class="field-label" style="margin-bottom:5px">Посока на оградата</div>
-      <div class="pills" id="fenceBtns">
-        <button class="pill active" data-f="S">Юг</button>
-        <button class="pill" data-f="EW">Изток–Запад</button>
-        <button class="pill" data-f="SESW">ЮИ + ЮЗ</button>
-        <button class="pill" data-f="ALL">Всички посоки</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Бифациален бонус <span class="tip" title="Допълнително производство от задната страна на панела. Монофациални = 0%, бифациални = 5-25%.">?</span></span>
-        <span class="field-val" id="bifacialVal">10%</span>
-      </div>
-      <div class="slider-zone"><input id="bifacial" type="range" min="0" max="30" step="1" value="10"/></div>
-      <div class="field-hint"><span>0% моно</span><span>30% бифациален</span></div>
-    </div>
-  </div>
-
-  <!-- ── System losses ── -->
-  <div class="sec">
-    <div class="sec-title">Системни загуби</div>
-    <div class="field">
-      <div class="field-row">
-        <span class="field-label">Кабели, инвертор, температура <span class="tip" title="Типични загуби: инвертор 3-5%, кабели 1-3%, температура 5-8%, замърсяване 2-4%. Общо 12-16% е нормално.">?</span></span>
-        <span class="field-val" id="sysLossVal">14%</span>
-      </div>
-      <div class="slider-zone"><input id="sysLoss" type="range" min="8" max="25" step="0.5" value="14"/></div>
-      <div class="field-hint"><span>8% премиум</span><span>14% типично</span><span>25% остаряла</span></div>
-    </div>
-  </div>
-
-  <!-- ── Finances ── -->
-  <div class="sec">
-    <div class="sec-title">Финанси</div>
-    <div class="split">
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Цена ел. енергия</span>
-          <span class="field-val" id="priceVal">0.12 €/kWh</span>
-        </div>
-        <div class="slider-zone"><input id="price" type="range" min="0.06" max="0.35" step="0.005" value="0.12"/></div>
-      </div>
-      <div class="field">
-        <div class="field-row">
-          <span class="field-label">Цена на системата</span>
-          <span class="field-val" id="sysCostVal">900 €/kWp</span>
-        </div>
-        <div class="slider-zone"><input id="sysCost" type="range" min="500" max="1800" step="10" value="900"/></div>
-      </div>
-    </div>
-  </div>
-
+  <div class="sec"><div class="stitle" data-t="s_system">Система</div>
+    <div class="fld"><div class="flbl" data-t="l_type">Тип инсталация</div><select id="mode"><option value="roof" data-t="o_roof">Покрив / конструкция</option><option value="fence" data-t="o_fence">Соларна ограда</option></select></div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_area">Площ за панели</span><span class="fval" id="areaV">50 m²</span></div><div class="szone"><input id="area" type="range" min="5" max="300" step="1" value="50"/></div><div class="fhint"><span>5 m²</span><span>300 m²</span></div></div>
+    <div class="fcomp" id="kwpV">10.0 kWp</div>
+    <div class="fsmall" data-t="kwp_hint">≈ 200 W/m² · модерни панели 400–550 W · 1 панел ≈ 2 m²</div></div>
+  <div class="sec" id="roofBlock"><div class="stitle" data-t="s_orient">Ориентация на панелите</div>
+    <div class="flbl" style="margin-bottom:5px" data-t="l_auto">Бърза оптимизация <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_auto">Задава оптимален азимут и наклон автоматично.</div></span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px" id="presetBar"><button class="pbtn" data-p="manual"><span>✎</span> <span data-t="p_manual">Ръчно</span></button><button class="pbtn on" data-p="annual"><span>◎</span> <span data-t="p_annual">Годишен</span></button><button class="pbtn" data-p="summer"><span>☀</span> <span data-t="p_summer">Лято</span></button><button class="pbtn" data-p="winter"><span>❄</span> <span data-t="p_winter">Зима</span></button><button class="pbtn" data-p="equinox"><span>⚖</span> <span data-t="p_equinox">Равноденствие</span></button></div>
+    <div class="note info" id="presetNote" style="margin-bottom:7px;font-size:10px"></div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_azimuth">Азимут (посока)</span><span class="fval" id="azV">180° Юг</span></div>
+      <div class="pills" id="azBtns"><button class="pill" data-az="90">Изток 90°</button><button class="pill" data-az="135">Югоизток 135°</button><button class="pill on" data-az="180" data-t="az_s">Юг 180°</button><button class="pill" data-az="210">Югозапад 210°</button><button class="pill" data-az="270">Запад 270°</button></div></div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_tilt">Наклон на панелите <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_tilt">0° = хоризонтално. 90° = стена. За България оптимално 35–38°.</div></span></span><span class="fval" id="tiltV">36°</span></div><div class="szone"><input id="tilt" type="range" min="0" max="90" step="1" value="36"/></div><div class="fhint"><span>0° плосък</span><span>36° оптимален</span><span>90° стена</span></div></div>
+    <div style="margin-top:5px"><div class="chdr" id="str2Hdr" onclick="toggleStr2()"><span class="flbl" style="font-weight:600" data-t="l_str2">＋ Втори стринг (второ направление)</span><span class="ar">▼</span></div>
+    <div class="cbody" id="str2B">
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_share">Дял от общата мощност</span><span class="fval" id="s2sV">30%</span></div><div class="szone"><input id="s2s" type="range" min="10" max="60" step="1" value="30"/></div></div>
+      <div class="fld"><div class="flbl" style="margin-bottom:4px" data-t="l_az2">Азимут на стринг 2</div><div class="pills" id="az2Btns"><button class="pill" data-az2="90">Изток</button><button class="pill" data-az2="150">Югоизток</button><button class="pill on" data-az2="270">Запад</button></div></div>
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_tilt2">Наклон на стринг 2</span><span class="fval" id="t2V">36°</span></div><div class="szone"><input id="t2" type="range" min="0" max="90" step="1" value="36"/></div></div>
+    </div></div></div>
+  <div class="sec" id="fenceBlock" style="display:none"><div class="stitle" data-t="s_fence_or">Ориентация на оградата</div>
+    <div class="fld"><div class="flbl" style="margin-bottom:4px" data-t="l_fence_dir">Посока на оградата</div><div class="pills" id="fenceBtns"><button class="pill on" data-f="S">Юг</button><button class="pill" data-f="EW">Изток–Запад</button><button class="pill" data-f="SESW">Югоизток+Югозапад</button><button class="pill" data-f="ALL" data-t="f_all">Всички посоки</button></div></div>
+    <div class="fld"><div class="frow"><span class="flbl">Двустранни панели (bifacial) <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_bifacial">Произвеждат и от задната страна. 5–25% допълнително.</div></span></span><span class="fval" id="bifV">10%</span></div><div class="szone"><input id="bif" type="range" min="0" max="30" step="1" value="10"/></div></div></div>
+  <div class="sec"><div class="stitle" data-t="s_losses">Системни загуби <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_losses">Инвертор + кабели + температура + замърсяване. 12–16% нормално.</div></span></div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_sysloss">Кабели, инвертор, температура</span><span class="fval" id="slV">14.0%</span></div><div class="szone"><input id="sl" type="range" min="8" max="25" step="0.5" value="14"/></div><div class="fhint"><span>8% премиум</span><span>14% типично</span><span>25% стара</span></div></div></div>
 </div>
-
-<!-- ════════ RIGHT: RESULTS ════════ -->
-<div>
-<div class="sticky">
+<!-- КОЛОНА 2: ЛОКАЦИЯ + КОНСУМАЦИЯ + ФИНАНСИ -->
 <div class="card">
-
-  <div id="statusPill" class="status ok">
-    <span class="dot"></span>
-    <span id="statusText">Добри условия</span>
-  </div>
-
-  <div class="kpis" style="margin-top:10px">
-    <div class="kpi hero">
-      <div class="t">Годишно производство</div>
-      <div class="n" id="outYear">—</div>
-      <div class="s" id="outYearNote">—</div>
-    </div>
-  </div>
-
-  <div class="kpis">
-    <div class="kpi">
-      <div class="t">Дневно (<span id="outMonthName">Юни</span>)</div>
-      <div class="n" id="outDay">—</div>
-    </div>
-    <div class="kpi">
-      <div class="t">Спестено / година</div>
-      <div class="n" id="outValue">—</div>
-    </div>
-  </div>
-  <div class="kpis">
-    <div class="kpi">
-      <div class="t">Общо загуби</div>
-      <div class="n" id="outLoss">—</div>
-      <div class="s" id="outLossNote">—</div>
-    </div>
-    <div class="kpi">
-      <div class="t">Ориент. фактор (<span id="outOrientMonth">Юни</span>)</div>
-      <div class="n" id="outOrient">—</div>
-      <div class="s" id="outOrientNote">—</div>
-    </div>
-  </div>
-
-  <!-- Monthly chart -->
-  <div class="chart-wrap">
-    <div class="chart-label">Месечно производство (kWh)</div>
-    <div class="chart" id="chart"></div>
-  </div>
-
-  <!-- Season selector for viewing -->
-  <div class="field" style="margin-top:8px">
-    <div class="field-row">
-      <span class="field-label">Преглед месец</span>
-      <span class="field-val" id="monthVal">Юни · ×1.38</span>
-    </div>
-    <div class="slider-zone" style="--slider-pad:12px"><input id="month" type="range" min="1" max="12" step="1" value="6"/></div>
-  </div>
-
+  <div class="sec"><div class="stitle" data-t="s_location">Слънчева радиация и засенчване</div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_irr">Слънчева радиация <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_irr">kWh/m²/ден средногодишно. София≈3.8, Бургас≈4.0, Сандански≈4.2. Мюнхен≈3.4, Берлин≈3.0. Проверете в PVGIS.</div></span></span><span class="fval" id="irrV">3.90</span></div><div class="szone"><input id="irr" type="range" min="2.50" max="5.00" step="0.01" value="3.90"/></div><div class="fhint"><span>2.50 <span data-t="h_north">Северна Европа</span></span><span>3.90</span><span>5.00 <span data-t="h_south">Южна Европа</span></span></div></div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_micro">Микроклимат <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_micro">Планински: +10–20%. Смог/мъгла: −10–20%.</div></span></span><span class="fval" id="micV">0%</span></div><div class="szone"><input id="mic" type="range" min="-20" max="20" step="1" value="0"/></div><div class="fhint"><span data-t="h_smog">−20% смог</span><span data-t="h_mountain">+20% планински</span></div></div>
+    <div class="split">
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_shadefar">Далечно засенчване <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">Планини на хоризонта. Равнина: 0%. Долина: 5–15%.</div></span></span><span class="fval" id="sfV">0%</span></div><div class="szone"><input id="sf" type="range" min="0" max="15" step="1" value="0"/></div></div>
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_shadenear">Близко засенчване <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">Дървета, сгради. Над 10%: обмислете. Над 25%: неподходящо!</div></span></span><span class="fval" id="snV">0%</span></div><div class="szone"><input id="sn" type="range" min="0" max="40" step="1" value="0"/></div></div></div></div>
+  <div class="sec"><div class="stitle" data-t="s_consumption">Месечна консумация на електроенергия <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_consumption">Разделете на 3 компонента: битова (постоянна), електромобил (постоянен) и отопление/охлаждане (сезонно — камбана).</div></span></div>
+    <div class="fld"><div class="frow"><span class="flbl">🏠 Битова консумация (целогодишно) <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">Осветление, хладилник, пералня, готвене, компютри. Постоянна целогодишно. Типично: 150–400 kWh/месец.</div></span></span><span class="fval" id="conHV">250 kWh/месец</span></div><div class="szone big"><input id="conH" type="range" min="50" max="1500" step="10" value="250"/></div><div class="fhint"><span>50</span><span>250</span><span>1 500 kWh</span></div></div>
+    <div class="fld"><div class="frow"><span class="flbl">🚗 Електромобил (целогодишно) <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">Средна месечна консумация за зареждане. Постоянна целогодишно. 0 = нямам EV. Типично 300–800 kWh/мес. EV увеличава самоконсумацията — колата действа като батерия.</div></span></span><span class="fval" id="conEVV">0 kWh/месец</span></div><div class="szone big"><input id="conEV" type="range" min="0" max="1500" step="10" value="0"/></div><div class="fhint"><span>0 = без EV</span><span>500</span><span>1 500 kWh</span></div></div>
+    <div class="fld"><div class="frow"><span class="flbl">🔥 Отопление/охлаждане (пиково зимно) <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">Максималната месечна консумация за отопление (декември–февруари). Лятото автоматично пада до минимум за охлаждане (~200 kWh). Пролет/есен — средно. Камбановидна крива.</div></span></span><span class="fval" id="conHeatV">0 kWh/месец</span></div><div class="szone big"><input id="conHeat" type="range" min="0" max="3000" step="10" value="0"/></div><div class="fhint"><span>0 = без отопление</span><span>800</span><span>3 000 kWh</span></div></div>
+    <div class="fcomp" id="conYV">3 000 kWh/година</div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_selfcon">Самоконсумация <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_selfcon">Каква част от солара ползвате директно. Максимумът зависи от EV и батерия. Без нищо: 50%. С EV: 75%. С батерия: 90%. С двете: 95%.</div></span></span><span class="fval" id="scV">30%</span></div><div class="szone"><input id="sc" type="range" min="10" max="50" step="1" value="30"/></div><div class="fhint"><span>10% рядко вкъщи</span><span id="scMaxHint">максимум 50%</span></div></div>
+    <div class="split">
+      <div class="fld"><div class="flbl" data-t="l_battery">Батерия за съхранение <span class="tip" onclick="toggleTip(this)">?<div class="tip-box" data-t="tip_battery">Съхранява дневния излишък за нощта. Намалява загубения ток.</div></span></div><select id="bat"><option value="0" data-t="o_nobat">Без батерия</option><option value="5">5 kWh</option><option value="10">10 kWh</option><option value="15">15 kWh</option><option value="20">20 kWh</option><option value="30">30 kWh</option><option value="40">40 kWh</option><option value="50">50 kWh</option></select></div>
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_batcost">Цена на батерията (обща) <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">5kWh≈1500–2500€, 10kWh≈3000–4500€, 30kWh≈8000–12000€.</div></span></span><span class="fval" id="bcV">3 500 €</span></div><div class="szone"><input id="bc" type="range" min="0" max="25000" step="100" value="3500"/></div><div class="fhint"><span>0 €</span><span>25 000 €</span></div></div></div></div>
+  <div class="sec"><div class="stitle" data-t="s_finance">Финансови параметри</div>
+    <div class="split">
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_buyprice">Цена на електроенергията <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">От сметката. България: 0.12–0.15 €/kWh. Германия: 0.30–0.40 €/kWh.</div></span></span><span class="fval" id="prV">0.150 €/kWh</span></div><div class="szone"><input id="pr" type="range" min="0.06" max="0.50" step="0.005" value="0.15"/></div></div>
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_feedin">Изкупна цена на излишъка <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">С договор: 0.04–0.08 €/kWh. Без договор: 0 € — токът се губи.</div></span></span><span class="fval" id="fiV">0.000 €/kWh</span></div><div class="szone"><input id="fi" type="range" min="0" max="0.15" step="0.005" value="0"/></div></div></div>
+    <div class="fld"><div class="frow"><span class="flbl" data-t="l_syscost">Цена на соларната система (обща) <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">С монтаж, без батерия. 5kWp≈4–6k€, 10kWp≈7–11k€, 20kWp≈14–20k€.</div></span></span><span class="fval" id="sc2V">9 000 €</span></div><div class="szone"><input id="sc2" type="range" min="2000" max="50000" step="100" value="9000"/></div><div class="fhint"><span>2 000 €</span><span>50 000 €</span></div></div>
+    <div class="fsmall" id="sc2hint">= 900 €/kWp</div>
+    <div class="split">
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_subsidy">Субсидия или грант</span><span class="fval" id="subV">0 €</span></div><div class="szone"><input id="sub" type="range" min="0" max="20000" step="100" value="0"/></div></div>
+      <div class="fld"><div class="frow"><span class="flbl" data-t="l_escalation">Годишно поскъпване на тока <span class="tip" onclick="toggleTip(this)">?<div class="tip-box">ЕС: 3–5%/година. По-високо = по-бърза възвръщаемост.</div></span></span><span class="fval" id="escV">3%</span></div><div class="szone"><input id="esc" type="range" min="0" max="8" step="0.5" value="3"/></div></div></div></div>
+</div>
+<!-- КОЛОНА 3: РЕЗУЛТАТИ -->
+<div class="col-r"><div class="card">
+  <div id="statusPill" class="status ok"><span class="dot"></span><span id="statusText">Добри условия</span></div>
+  <div class="kpis" style="margin-top:8px"><div class="kpi hero"><div class="t" data-t="r_annual">Годишно производство</div><div class="n" id="oYear">—</div><div class="s" id="oYearN">—</div></div></div>
+  <div class="kpis"><div class="kpi"><div class="t" data-t="r_selfcon">Самоконсумирано</div><div class="n" id="oSelf">—</div><div class="s" id="oSelfN">—</div></div><div class="kpi"><div class="t" id="expTitle" data-t="r_export">Продадено</div><div class="n" id="oExp">—</div><div class="s" id="oExpN">—</div></div></div>
+  <div class="kpis"><div class="kpi"><div class="t" id="dayTitle">Дневно производство</div><div class="n" id="oDay">—</div></div><div class="kpi"><div class="t" data-t="r_loss">Общи загуби</div><div class="n" id="oLoss">—</div><div class="s" id="oLossDetail">—</div></div></div>
+  <!-- CHART -->
+  <div class="chwrap" style="margin-top:14px"><div class="chlbl" style="font-size:11.5px" data-t="r_chart">⚡ Месечно производство спрямо консумация</div>
+    <div id="chart" style="display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end;height:200px;background:rgba(255,255,255,.02);border-radius:10px;padding:8px 5px 0"></div>
+    <div class="legend-row" style="margin-top:5px"><span><span class="ldot" style="background:var(--sun)"></span> <span data-t="lg_prod">Производство</span></span><span><span class="ldot" style="background:var(--cyan)"></span> <span data-t="lg_cons">Консумация</span></span><span style="margin-left:auto;font-size:8px;color:var(--dim)" data-t="lg_click">← кликнете бар за детайли</span></div></div>
+  <div class="mdetail" id="mdetail"></div>
+  <!-- Savings -->
+  <div class="chwrap"><div class="chlbl" data-t="r_savings">Годишни спестявания</div><div class="sbar"><div class="sseg" id="segS" style="background:var(--green);width:60%">0 €</div><div class="sseg" id="segF" style="background:var(--blue);width:40%">0 €</div></div>
+    <div class="legend-row"><span><span class="ldot" style="background:var(--green)"></span> <span data-t="lg_saved">Спестен ток</span></span><span><span class="ldot" style="background:var(--blue)"></span> <span data-t="lg_sold">Изкупен ток</span></span></div></div>
   <!-- ROI -->
-  <div class="chart-wrap">
-    <div class="chart-label">Възвръщаемост</div>
-    <div class="roi-grid">
-      <div class="roi-item">
-        <div class="roi-n" id="roiCost">—</div>
-        <div class="roi-t">Инвестиция</div>
-      </div>
-      <div class="roi-item">
-        <div class="roi-n" id="roiYears">—</div>
-        <div class="roi-t">Изплащане</div>
-      </div>
-      <div class="roi-item">
-        <div class="roi-n" id="roi25">—</div>
-        <div class="roi-t">Печалба 25 г.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="note" id="noteBox">
-    Годишното производство е сума от 12 месечни стойности. Ориентационният фактор отчита наклон и азимут за всеки месец поотделно.
-  </div>
-
-</div>
-</div>
-</div>
-
-</div><!-- grid -->
-
-<footer>
-  PV Калкулатор v6 · Приближителен модел · За прецизен инженеринг: <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" style="color:var(--blue);text-decoration:none" target="_blank">PVGIS</a> / PVsyst
-</footer>
-
-</div><!-- wrap -->
-
+  <div class="chwrap"><div class="chlbl" data-t="r_roi">Възвръщаемост за 25 години</div><div class="roi">
+    <div class="roi-i"><div class="rn" id="riC">—</div><div class="rt" data-t="ri_invest">Инвестиция</div></div><div class="roi-i"><div class="rn" id="riP">—</div><div class="rt" data-t="ri_payback">Изплащане</div></div>
+    <div class="roi-i"><div class="rn" id="riR">—</div><div class="rt" data-t="ri_profit">Печалба</div></div><div class="roi-i"><div class="rn" id="riCO">—</div><div class="rt">CO₂ спестен</div></div></div></div>
+  <div class="note" data-t="r_note">Включва 0.5% годишна деградация, 3-компонентна консумация с камбана за отопление, CO₂ 0.45 kg/kWh (БГ микс).</div>
+</div></div></div>
+<footer>PV Калкулатор v12 · <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" target="_blank">PVGIS</a></footer></div>
 <script>
-const $ = id => document.getElementById(id);
+var $=function(id){return document.getElementById(id)};
+var MN=['','Ян','Фев','Мар','Апр','Май','Юни','Юли','Авг','Сеп','Окт','Ное','Дек'];
+var MNF=['','Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
+var MNE=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var MNEF=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+var DIM=[0,31,28,31,30,31,30,31,31,30,31,30,31];
+// Monthly solar factors (relative to annual avg)
+var MF=[0,.46,.55,.82,1.05,1.19,1.38,1.42,1.30,1.05,.76,.50,.42];
+// Optimal tilt per month
+var OT=[0,60,55,45,35,28,25,27,33,42,52,58,61];
+// Heating bell curve: Jan=1.0(peak), Jul=0.17(min AC), normalized so peak=1.0
+var HB=[0,1.0,.95,.55,.25,.17,.17,.17,.17,.25,.55,.85,1.0];
+var FK={S:.55,EW:.48,SESW:.52,ALL:.42};
+var PRS={annual:{az:180,tilt:36},summer:{az:180,tilt:15},winter:{az:195,tilt:60},equinox:{az:180,tilt:42}};
+var DEFS={bg:{irr:3.90,mic:0,sl:14,pr:0.15,fi:0,sc2:9000,sub:0,esc:3,bc:3500,conH:250,conEV:0,conHeat:0},en:{irr:3.20,mic:0,sl:14,pr:0.35,fi:0.08,sc2:14000,sub:0,esc:3,bc:4000,conH:300,conEV:0,conHeat:0}};
+var lang='bg',selM=0,az1=180,az2=270,fDir='S',str2=false,preset='annual';
+var mP=[],mC=[]; // stored for click handler
 
-/* ─── Constants ─── */
-const MN  = ['','Ян','Фев','Мар','Апр','Май','Юни','Юли','Авг','Сеп','Окт','Ное','Дек'];
-const MNF = ['','Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
-const DIM = [0,31,28,31,30,31,30,31,31,30,31,30,31];
+var T={title:{bg:'PV Калкулатор — България',en:'PV Calculator — Germany'},subtitle:{bg:'Производство · Консумация · Батерия · Възвръщаемост',en:'Production · Consumption · Battery · ROI'},btn_reset:{bg:'↺ Нулиране',en:'↺ Reset'},s_system:{bg:'Система',en:'System'},l_type:{bg:'Тип инсталация',en:'Installation type'},o_roof:{bg:'Покрив / конструкция',en:'Roof / structure'},o_fence:{bg:'Соларна ограда',en:'Solar fence'},l_area:{bg:'Площ за панели',en:'Panel area'},kwp_hint:{bg:'≈ 200 W/m² · модерни панели 400–550 W · 1 панел ≈ 2 m²',en:'≈ 200 W/m² · modern panels 400–550 W · 1 panel ≈ 2 m²'},s_orient:{bg:'Ориентация на панелите',en:'Panel orientation'},l_auto:{bg:'Бърза оптимизация',en:'Quick optimize'},tip_auto:{bg:'Задава оптимален азимут и наклон.',en:'Sets optimal azimuth and tilt.'},p_manual:{bg:'Ръчно',en:'Manual'},p_annual:{bg:'Годишен',en:'Annual'},p_summer:{bg:'Лято',en:'Summer'},p_winter:{bg:'Зима',en:'Winter'},p_equinox:{bg:'Равноденствие',en:'Equinox'},preset_annual:{bg:'Годишен оптимум: 180° юг, 36° наклон.',en:'Annual: 180° south, 36° tilt.'},preset_summer:{bg:'Лято: 180°, 15° плосък.',en:'Summer: 180°, 15° flat.'},preset_winter:{bg:'Зима: 195° югозапад, 60° стръмен.',en:'Winter: 195° SSW, 60° steep.'},preset_equinox:{bg:'Равноденствие: 180°, 42°.',en:'Equinox: 180°, 42°.'},preset_manual:{bg:'Ръчен режим.',en:'Manual mode.'},l_azimuth:{bg:'Азимут (посока)',en:'Azimuth'},az_s:{bg:'Юг 180°',en:'South 180°'},l_tilt:{bg:'Наклон на панелите',en:'Panel tilt'},tip_tilt:{bg:'0°=хоризонтално. 90°=стена. Оптимално 35–38°.',en:'0°=flat. 90°=wall. Optimal 30–38°.'},l_str2:{bg:'＋ Втори стринг (второ направление)',en:'＋ Second string'},l_share:{bg:'Дял от общата мощност',en:'Power share'},l_az2:{bg:'Азимут на стринг 2',en:'String 2 azimuth'},l_tilt2:{bg:'Наклон на стринг 2',en:'String 2 tilt'},s_fence_or:{bg:'Ориентация на оградата',en:'Fence orientation'},l_fence_dir:{bg:'Посока на оградата',en:'Fence direction'},f_all:{bg:'Всички посоки',en:'All directions'},tip_bifacial:{bg:'Произвеждат и отзад. 5–25% допълнително.',en:'Produce from both sides. 5–25% extra.'},s_losses:{bg:'Системни загуби',en:'System losses'},tip_losses:{bg:'12–16% нормално.',en:'12–16% normal.'},l_sysloss:{bg:'Кабели, инвертор, температура',en:'Cables, inverter, temperature'},s_location:{bg:'Слънчева радиация и засенчване',en:'Irradiation and shading'},l_irr:{bg:'Слънчева радиация',en:'Solar irradiation'},tip_irr:{bg:'София≈3.8, Сандански≈4.2.',en:'Munich≈3.4, Berlin≈3.0.'},h_north:{bg:'Северна Европа',en:'Northern Europe'},h_south:{bg:'Южна Европа',en:'Southern Europe'},l_micro:{bg:'Микроклимат',en:'Microclimate'},tip_micro:{bg:'Планински: +10–20%. Смог: −10–20%.',en:'Mountain: +10–20%. Smog: −10–20%.'},h_smog:{bg:'−20% смог',en:'−20% smog'},h_mountain:{bg:'+20% планински',en:'+20% mountain'},l_shadefar:{bg:'Далечно засенчване',en:'Far shading'},l_shadenear:{bg:'Близко засенчване',en:'Near shading'},s_consumption:{bg:'Месечна консумация на електроенергия',en:'Monthly electricity consumption'},tip_consumption:{bg:'3 компонента: битова + EV + отопление.',en:'3 components: household + EV + heating.'},l_selfcon:{bg:'Самоконсумация',en:'Self-consumption'},tip_selfcon:{bg:'Макс зависи от EV и батерия.',en:'Max depends on EV and battery.'},l_battery:{bg:'Батерия за съхранение',en:'Battery storage'},o_nobat:{bg:'Без батерия',en:'No battery'},tip_battery:{bg:'Съхранява излишъка. Намалява загубите.',en:'Stores surplus. Reduces losses.'},l_batcost:{bg:'Цена на батерията (обща)',en:'Battery cost (total)'},s_finance:{bg:'Финансови параметри',en:'Financial parameters'},l_buyprice:{bg:'Цена на електроенергията',en:'Electricity price'},l_feedin:{bg:'Изкупна цена на излишъка',en:'Feed-in tariff'},l_syscost:{bg:'Цена на соларната система (обща)',en:'Solar system cost (total)'},l_subsidy:{bg:'Субсидия или грант',en:'Subsidy or grant'},l_escalation:{bg:'Годишно поскъпване на тока',en:'Annual price increase'},tip_esc:{bg:'3–5%/година.',en:'3–5%/year.'},r_annual:{bg:'Годишно производство',en:'Annual production'},r_selfcon:{bg:'Самоконсумирано',en:'Self-consumed'},r_export:{bg:'Продадено',en:'Exported'},r_loss:{bg:'Общи загуби',en:'Total losses'},r_chart:{bg:'⚡ Месечно производство спрямо консумация',en:'⚡ Monthly production vs consumption'},lg_prod:{bg:'Производство',en:'Production'},lg_cons:{bg:'Консумация',en:'Consumption'},lg_click:{bg:'← кликнете бар за детайли',en:'← click bar for details'},r_savings:{bg:'Годишни спестявания',en:'Annual savings'},lg_saved:{bg:'Спестен ток',en:'Saved'},lg_sold:{bg:'Изкупен ток',en:'Sold'},r_roi:{bg:'Възвръщаемост за 25 години',en:'ROI over 25 years'},ri_invest:{bg:'Инвестиция',en:'Investment'},ri_payback:{bg:'Изплащане',en:'Payback'},ri_profit:{bg:'Печалба',en:'Profit'},r_note:{bg:'Включва 0.5% годишна деградация, 3-компонентна консумация с камбана за отопление, CO₂ 0.45 kg/kWh (БГ микс).',en:'Includes 0.5% degradation, 3-component consumption with heating bell curve, CO₂ 0.40 kg/kWh (DE mix).'},st_ok:{bg:'Добри условия',en:'Good conditions'},st_full:{bg:'Покрива цялата годишна консумация',en:'Covers all annual consumption'},st_low:{bg:'Покрива под 50% от консумацията',en:'Covers less than 50%'},st_shade:{bg:'Високо засенчване',en:'High shading'},st_shade2:{bg:'Засенчване над средното',en:'Above-avg shading'},st_orient:{bg:'Неоптимална ориентация',en:'Non-optimal orientation'},r_lost:{bg:'Загубен в мрежата',en:'Lost to grid'},r_sold:{bg:'Продадено на мрежата',en:'Sold to grid'}};
 
-// Monthly irradiation factors — normalized so annual mean ≈ 1.0
-// Based on Sofia PVGIS data (seasonal: Win 2.0, Spr 5.0, Sum 7.0, Aut 3.3)
-const MF = [0, 0.46, 0.55, 0.82, 1.05, 1.19, 1.38, 1.42, 1.30, 1.05, 0.76, 0.50, 0.42];
+function setLang(l){lang=l;document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.dataset.lang===l)});document.querySelectorAll('[data-t]').forEach(function(el){var k=el.dataset.t;if(T[k]&&T[k][l])el.textContent=T[k][l]});applyDefaults(l);initChart();recalc()}
+function applyDefaults(l){var d=DEFS[l]||DEFS.bg;$('irr').value=d.irr;$('mic').value=d.mic;$('sl').value=d.sl;$('pr').value=d.pr;$('fi').value=d.fi;$('sc2').value=d.sc2;$('sub').value=d.sub;$('esc').value=d.esc;$('bc').value=d.bc;$('conH').value=d.conH;$('conEV').value=d.conEV;$('conHeat').value=d.conHeat}
+function resetAll(){$('area').value=50;$('mode').value='roof';$('tilt').value=36;$('bif').value=10;$('sf').value=0;$('sn').value=0;$('sc').value=30;$('bat').value='0';$('s2s').value=30;$('t2').value=36;str2=false;$('str2Hdr').classList.remove('open');$('str2B').classList.remove('open');$('roofBlock').style.display='';$('fenceBlock').style.display='none';selM=0;$('mdetail').classList.remove('show');applyDefaults(lang);az1=180;az2=270;fDir='S';document.querySelectorAll('#azBtns .pill').forEach(function(b){b.classList.toggle('on',+b.dataset.az===180)});applyPreset('annual')}
+function toggleTip(el){var w=el.classList.contains('open');document.querySelectorAll('.tip.open').forEach(function(t){t.classList.remove('open')});if(!w)el.classList.add('open')}
+document.addEventListener('click',function(e){if(!e.target.closest('.tip'))document.querySelectorAll('.tip.open').forEach(function(t){t.classList.remove('open')})});
+function orientF(az,tilt,m){var d=Math.min(90,Math.abs(az-180));var af=.65+.35*Math.max(0,Math.cos(d*Math.PI/180));var td=Math.abs(tilt-OT[m]);var tf=Math.exp(-Math.log(2)*Math.pow(td/25,2));return .25+.75*af*tf}
 
-// Optimal tilt by month for latitude ~42°N (Sofia)
-// Dec/Jan steep to catch low sun; Jun/Jul shallow
-const OPT_TILT = [0, 60, 55, 45, 35, 28, 25, 27, 33, 42, 52, 58, 61];
+function initChart(){var c=$('chart');c.innerHTML='';var mns=lang==='bg'?MN:MNE;for(var m=1;m<=12;m++){var col=document.createElement('div');col.id='bc'+m;col.className='chart-bar-col';col.dataset.m=m;col.style.cssText='display:flex;flex-direction:column;align-items:center;height:100%;gap:0';col.innerHTML='<div style="display:flex;gap:1px;font-size:7px;font-family:JetBrains Mono,monospace;white-space:nowrap;min-height:14px;font-weight:700"><span id="bk'+m+'" style="color:var(--sun)">0</span><span style="color:var(--dim)">/</span><span id="ck'+m+'" style="color:var(--cyan)">0</span></div><div style="position:relative;flex:1;width:100%;display:flex;gap:1px"><div id="be'+m+'" style="position:absolute;bottom:0;left:0;width:48%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--sun),#c88a10);min-height:1px;transition:height .3s"></div><div id="b2e'+m+'" style="position:absolute;bottom:0;right:0;width:48%;border-radius:3px 3px 0 0;background:var(--cyan);opacity:.6;transition:height .3s"></div></div><div style="font-size:7.5px;color:var(--dim);font-family:JetBrains Mono,monospace;margin-top:2px">'+mns[m]+'</div>';col.onclick=function(){var mm=+this.dataset.m;selM=(selM===mm)?0:mm;recalc()};c.appendChild(col)}}
 
-// Solar declination approximation by month (degrees)
-// Used for winter solstice azimuth correction
-const SOLAR_DECL = [0, -20.9, -13.0, -2.4, 9.4, 18.8, 23.1, 21.2, 13.5, 2.2, -9.6, -18.9, -23.0];
+function applyPreset(k){preset=k;if(k!=='manual'){var p=PRS[k];az1=p.az;$('tilt').value=p.tilt;document.querySelectorAll('#azBtns .pill').forEach(function(b){b.classList.toggle('on',+b.dataset.az===az1)})}document.querySelectorAll('#presetBar .pbtn').forEach(function(b){b.classList.toggle('on',b.dataset.p===k)});$('presetNote').textContent=(T['preset_'+k]&&T['preset_'+k][lang])||'';recalc()}
+function toggleStr2(){str2=!str2;$('str2Hdr').classList.toggle('open',str2);$('str2B').classList.toggle('open',str2);recalc()}
 
-// Fence orientation coefficients
-const FENCE_K = { S:0.55, EW:0.48, SESW:0.52, ALL:0.42 };
-
-/* ─── Presets ─── */
-const PRESETS = {
-  annual:  { az:180, tilt:36,  label:'Годишен оптимум: азимут 180° (юг), наклон 36° — най-добър баланс за цялата година.' },
-  summer:  { az:180, tilt:15,  label:'Лятно слънцестоене: азимут 180°, наклон 15° — слънцето е високо, плосък наклон улавя повече.' },
-  winter:  { az:195, tilt:60,  label:'Зимно слънцестоене: азимут 195° (ЮЮЗ), наклон 60° — слънцето е ниско, стръмен наклон + лек ЮЗ за следобедно слънце.' },
-  equinox: { az:180, tilt:42,  label:'Равноденствие: азимут 180°, наклон 42° — слънцето е на средна височина, наклон ≈ географска ширина.' },
-};
-
-/* ─── State ─── */
-let az1 = 180, az2 = 270, fenceDir = 'S', str2Open = false;
-let activePreset = 'annual';
-let manualOverride = false;
-
-/* ─── Orientation model ─── */
-function orientationFactor(azDeg, tiltDeg, month) {
-  const optTilt = OPT_TILT[month];
-
-  // Azimuth: cosine falloff from south, with diffuse floor
-  const azDelta = Math.min(90, Math.abs(azDeg - 180));
-  const azCos = Math.cos(azDelta * Math.PI / 180);
-  const azFactor = 0.65 + 0.35 * Math.max(0, azCos);
-
-  // Tilt: Gaussian falloff from monthly optimum
-  const tiltDelta = Math.abs(tiltDeg - optTilt);
-  const tiltFactor = Math.exp(-Math.log(2) * (tiltDelta / 25) ** 2);
-
-  // Combine direct + diffuse (25% floor)
-  const direct = azFactor * tiltFactor;
-  return 0.25 + 0.75 * direct;
-}
-
-/* ─── Chart ─── */
-function initChart() {
-  const c = $('chart');
-  c.innerHTML = '';
-  for (let m = 1; m <= 12; m++) {
-    const col = document.createElement('div');
-    col.className = 'bar-col';
-    col.id = 'bc' + m;
-    col.innerHTML = `<div class="bar-kwh" id="bk${m}">0</div><div class="bar" id="be${m}" style="height:2px"></div><div class="bar-lbl">${MN[m]}</div>`;
-    c.appendChild(col);
-  }
-}
-
-/* ─── Apply preset ─── */
-function applyPreset(key) {
-  if (key === 'manual') {
-    activePreset = 'manual';
-    manualOverride = true;
-    $('tiltAutoBadge').style.display = 'none';
-    $('presetNote').textContent = 'Ръчен режим — задайте азимут и наклон по ваш избор.';
-  } else {
-    const p = PRESETS[key];
-    activePreset = key;
-    manualOverride = false;
-
-    // Set azimuth
-    az1 = p.az;
-    // Highlight closest az pill
-    document.querySelectorAll('#azBtns .pill').forEach(b => {
-      b.classList.remove('active');
-      if (+b.dataset.az === az1) b.classList.add('active');
-    });
-
-    // Set tilt
-    $('tilt').value = p.tilt;
-
-    $('tiltAutoBadge').style.display = 'inline-flex';
-    $('presetNote').textContent = p.label;
-  }
-
-  // Highlight preset buttons
-  document.querySelectorAll('#presetBar .preset-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.preset === key);
-  });
-
-  recalc();
-}
-
-/* ─── Main calculation ─── */
-function recalc() {
-  const mode = $('mode').value;
-  const area = +$('area').value;
-  const kwp = area * 0.20;
-  const irrBase = +$('irr').value;
-  const microF = 1 + (+$('micro').value / 100);
-  const sysLoss = +$('sysLoss').value / 100;
-  const farShade = +$('shadeFar').value / 100;
-  const nearShade = +$('shadeNear').value / 100;
-  const selMonth = +$('month').value;
-  const price = +$('price').value;
-  const costPerKwp = +$('sysCost').value;
-
-  const prodF = (1 - sysLoss) * (1 - farShade) * (1 - nearShade);
-  const totalLossPct = (1 - prodF) * 100;
-
-  // Monthly production
-  const mKwh = [0];
-  let yearTotal = 0;
-
-  for (let m = 1; m <= 12; m++) {
-    const irr = irrBase * MF[m];
-    let daily;
-
-    if (mode === 'fence') {
-      const fK = FENCE_K[fenceDir] || 0.50;
-      const bif = 1 + (+$('bifacial').value / 100);
-      daily = kwp * irr * microF * prodF * fK * bif;
-    } else {
-      const t1 = +$('tilt').value;
-      const of1 = orientationFactor(az1, t1, m);
-      if (str2Open) {
-        const s2 = +$('str2Share').value / 100;
-        const t2 = +$('tilt2').value;
-        const of2 = orientationFactor(az2, t2, m);
-        daily = kwp * irr * microF * prodF * ((1 - s2) * of1 + s2 * of2);
-      } else {
-        daily = kwp * irr * microF * prodF * of1;
-      }
-    }
-    const mTotal = daily * DIM[m];
-    mKwh.push(mTotal);
-    yearTotal += mTotal;
-  }
-
-  const selDayProd = mKwh[selMonth] / DIM[selMonth];
-
-  // Orientation factor for display
-  let dispOrient = 1;
-  if (mode === 'fence') {
-    dispOrient = FENCE_K[fenceDir] || 0.50;
-  } else {
-    const of1 = orientationFactor(az1, +$('tilt').value, selMonth);
-    if (str2Open) {
-      const s2 = +$('str2Share').value / 100;
-      const of2 = orientationFactor(az2, +$('tilt2').value, selMonth);
-      dispOrient = (1 - s2) * of1 + s2 * of2;
-    } else {
-      dispOrient = of1;
-    }
-  }
-
-  // ─── UI update ───
-  $('areaVal').textContent = area + ' m²';
-  $('kwpVal').textContent = kwp.toFixed(1) + ' kWp';
-  $('irrVal').textContent = irrBase.toFixed(2) + ' kWh/m²/ден';
-  $('microVal').textContent = (+$('micro').value > 0 ? '+' : '') + $('micro').value + '%';
-  $('monthVal').textContent = MNF[selMonth] + ' · ×' + MF[selMonth].toFixed(2);
-  $('shadeFarVal').textContent = $('shadeFar').value + '%';
-  $('shadeNearVal').textContent = $('shadeNear').value + '%';
-  $('tiltVal').textContent = $('tilt').value + '°';
-  $('tilt2Val').textContent = $('tilt2').value + '°';
-  $('str2ShareVal').textContent = $('str2Share').value + '%';
-  $('bifacialVal').textContent = $('bifacial').value + '%';
-  $('sysLossVal').textContent = (+$('sysLoss').value).toFixed(1) + '%';
-  $('priceVal').textContent = price.toFixed(2) + ' €/kWh';
-  $('sysCostVal').textContent = costPerKwp + ' €/kWp';
-
-  // Az display
-  const azNames = {90:'И',120:'ИЮИ',150:'ЮИ',180:'Юг',195:'ЮЮЗ',200:'ЮЮЗ',210:'ЮЗ',225:'ЮЗ',240:'ЗЮЗ',270:'З'};
-  $('azVal').textContent = az1 + '° ' + (azNames[az1] || '');
-
-  // KPIs
-  $('outMonthName').textContent = MN[selMonth];
-  $('outOrientMonth').textContent = MN[selMonth];
-  $('outDay').textContent = selDayProd.toFixed(1) + ' kWh';
-  $('outYear').textContent = yearTotal >= 1000 ? (yearTotal / 1000).toFixed(2) + ' MWh' : yearTotal.toFixed(0) + ' kWh';
-  $('outYearNote').textContent = kwp.toFixed(1) + ' kWp · ' + (yearTotal / kwp).toFixed(0) + ' kWh/kWp';
-  $('outValue').textContent = (yearTotal * price).toFixed(0) + ' €';
-  $('outLoss').textContent = totalLossPct.toFixed(1) + '%';
-  $('outLossNote').textContent = 'сист. ' + (sysLoss * 100).toFixed(0) + '% + хориз. ' + (farShade * 100).toFixed(0) + '% + близко ' + (nearShade * 100).toFixed(0) + '%';
-  $('outOrient').textContent = (dispOrient * 100).toFixed(0) + '%';
-  $('outOrientNote').textContent = mode === 'fence'
-    ? 'ограда · ' + fenceDir
-    : 'аз. ' + az1 + '° · наклон ' + $('tilt').value + '°';
-
-  // ROI
-  const totalCost = kwp * costPerKwp;
-  const yearValue = yearTotal * price;
-  const payback = yearValue > 0 ? totalCost / yearValue : Infinity;
-  const profit25 = yearValue * 25 * 0.88 - totalCost;
-
-  $('roiCost').textContent = totalCost >= 10000 ? (totalCost / 1000).toFixed(1) + 'k €' : totalCost.toFixed(0) + ' €';
-  $('roiYears').textContent = payback < 100 ? payback.toFixed(1) + ' г.' : '—';
-  $('roi25').textContent = profit25 > 0
-    ? (profit25 >= 10000 ? (profit25 / 1000).toFixed(1) + 'k €' : profit25.toFixed(0) + ' €')
-    : '—';
-
+function recalc(){
+  var mode=$('mode').value,area=+$('area').value,kwp=area*.20;
+  var irrB=+$('irr').value,micF=1+(+$('mic').value/100);
+  var sysL=+$('sl').value/100,fSh=+$('sf').value/100,nSh=+$('sn').value/100;
+  var prBuy=+$('pr').value,prFeed=+$('fi').value;
+  var conH=+$('conH').value,conEV=+$('conEV').value,conHeat=+$('conHeat').value;
+  var scPct=+$('sc').value/100;
+  var batKwh=+$('bat').value,batTotal=+$('bc').value;
+  var pvTotal=+$('sc2').value,subsidy=+$('sub').value,escR=+$('esc').value/100;
+  var prodF=(1-sysL)*(1-fSh)*(1-nSh),lossP=(1-prodF)*100;
+  var hasEV=conEV>0,hasBat=batKwh>0,scMax=50;
+  if(hasEV&&hasBat)scMax=95;else if(hasBat)scMax=90;else if(hasEV)scMax=75;
+  $('sc').max=scMax;if(+$('sc').value>scMax)$('sc').value=scMax;scPct=+$('sc').value/100;
+  $('scMaxHint').textContent=(lang==='bg'?'максимум ':'maximum ')+scMax+'%';
+  var batBoost=hasBat?Math.min(.25,batKwh*.02):0;
+  var evBoost=hasEV?0.12:0;
+  var totalSC=Math.min(scMax/100,scPct+batBoost+evBoost);
+  // Monthly arrays: production completely independent from consumption
+  mP=[0];mC=[0];var conY=0,yP=0;
+  for(var m=1;m<=12;m++){
+    var irr=irrB*MF[m],d;
+    if(mode==='fence'){d=kwp*irr*micF*prodF*(FK[fDir]||.5)*(1+(+$('bif').value/100))}
+    else{var t1=+$('tilt').value,o1=orientF(az1,t1,m);if(str2){var s2=+$('s2s').value/100,o2=orientF(az2,+$('t2').value,m);d=kwp*irr*micF*prodF*((1-s2)*o1+s2*o2)}else d=kwp*irr*micF*prodF*o1}
+    mP.push(d*DIM[m]);yP+=d*DIM[m];
+    // Consumption: house(const) + EV(const) + heat(bell curve)
+    var mc=conH+conEV+(conHeat*HB[m]);
+    mC.push(mc);conY+=mc}
+  // Battery reduces lost energy: bigger battery absorbs more surplus
+  var batAbsorb=hasBat?Math.min(0.15,batKwh*0.003):0; // up to 15% extra SC from big battery
+  totalSC=Math.min(scMax/100,totalSC+batAbsorb);
+  var selfC=yP*totalSC,exported=yP*(1-totalSC);
+  var isLost=prFeed<0.001,savS=selfC*prBuy,savF=isLost?0:exported*prFeed,yS1=savS+savF;
+  var tot25=0;for(var y=0;y<25;y++){var dg=1-y*.005,es=Math.pow(1+escR,y);tot25+=(selfC*dg*prBuy*es)+(isLost?0:exported*dg*prFeed*es)}
+  var totalInv=pvTotal+(hasBat?batTotal:0)-subsidy;if(totalInv<0)totalInv=0;
+  var payback=yS1>0?totalInv/yS1:Infinity,profit25=tot25-totalInv;
+  var co2f=lang==='en'?0.00040:0.00045,co2=yP*25*.88*co2f;
+  // UI
+  var mn=lang==='bg'?MNF:MNEF,mns=lang==='bg'?MN:MNE,B=lang==='bg';
+  $('areaV').textContent=area+' m²';$('kwpV').textContent=kwp.toFixed(1)+' kWp';
+  $('irrV').textContent=irrB.toFixed(2);$('micV').textContent=(+$('mic').value>0?'+':'')+$('mic').value+'%';
+  $('sfV').textContent=$('sf').value+'%';$('snV').textContent=$('sn').value+'%';
+  $('tiltV').textContent=$('tilt').value+'°';$('t2V').textContent=$('t2').value+'°';$('s2sV').textContent=$('s2s').value+'%';
+  $('bifV').textContent=$('bif').value+'%';$('slV').textContent=(+$('sl').value).toFixed(1)+'%';
+  $('prV').textContent=prBuy.toFixed(3)+' €/kWh';$('fiV').textContent=prFeed.toFixed(3)+' €/kWh';$('escV').textContent=$('esc').value+'%';
+  $('sc2V').textContent=pvTotal.toLocaleString()+' €';$('sc2hint').textContent='= '+(kwp>0?(pvTotal/kwp).toFixed(0):0)+' €/kWp';
+  $('subV').textContent=subsidy>0?subsidy.toLocaleString()+' €':'0 €';
+  $('conHV').textContent=conH.toLocaleString()+' kWh/'+(B?'месец':'month');
+  $('conEVV').textContent=conEV.toLocaleString()+' kWh/'+(B?'месец':'month');
+  $('conHeatV').textContent=conHeat.toLocaleString()+' kWh/'+(B?'месец':'month');
+  $('conYV').textContent=Math.round(conY).toLocaleString()+' kWh/'+(B?'година':'year');
+  $('scV').textContent=Math.round(totalSC*100)+'%'+(evBoost>0?(B?' (вкл. EV)':' (incl. EV)'):'')+(batBoost>0||batAbsorb>0?(B?' (вкл. батерия)':' (incl. battery)'):'');
+  $('bcV').textContent=batTotal.toLocaleString()+' €';
+  var azN={90:B?'Изток':'East',135:B?'Югоизток':'SE',180:B?'Юг':'South',195:B?'ЮЮЗ':'SSW',210:B?'Югозапад':'SW',270:B?'Запад':'West'};
+  $('azV').textContent=az1+'° '+(azN[az1]||'');
+  // KPIs — always annual
+  $('dayTitle').textContent=(B?'Средно дневно производство':'Average daily production');
+  $('oDay').textContent=(yP/365).toFixed(1)+' kWh';
+  $('oYear').textContent=yP>=1e3?(yP/1e3).toFixed(2)+' MWh':yP.toFixed(0)+' kWh';
+  $('oYearN').textContent=kwp.toFixed(1)+' kWp · '+(kwp>0?(yP/kwp).toFixed(0):'0')+' kWh/kWp';
+  $('oSelf').textContent=selfC>=1e3?(selfC/1e3).toFixed(2)+' MWh':selfC.toFixed(0)+' kWh';$('oSelfN').textContent=Math.round(totalSC*100)+'%';
+  if(isLost){$('expTitle').textContent=T.r_lost[lang];$('oExp').textContent=exported>=1e3?(exported/1e3).toFixed(2)+' MWh':exported.toFixed(0)+' kWh';$('oExp').style.color='var(--red)';$('oExpN').textContent=B?'без договор — 0 €':'no contract — 0 €'}
+  else{$('expTitle').textContent=T.r_sold[lang];$('oExp').textContent=exported>=1e3?(exported/1e3).toFixed(2)+' MWh':exported.toFixed(0)+' kWh';$('oExp').style.color='';$('oExpN').textContent=Math.round((1-totalSC)*100)+'% · '+savF.toFixed(0)+' €/'+(B?'година':'year')}
+  $('oLoss').textContent=lossP.toFixed(1)+'%';$('oLossDetail').textContent=(B?'системни ':'system ')+(sysL*100).toFixed(0)+'% · '+(B?'хоризонт ':'horizon ')+(fSh*100).toFixed(0)+'% · '+(B?'близко ':'near ')+(nSh*100).toFixed(0)+'%';
+  // Month detail (click based)
+  var md=$('mdetail');
+  if(selM>0){
+    var mPr=mP[selM],mCo=mC[selM],mSe=mPr*totalSC,mEx=mPr*(1-totalSC),mSv=mSe*prBuy+(isLost?0:mEx*prFeed),diff=mPr-mCo,pct=mCo>0?Math.round(mPr/mCo*100):0;
+    md.classList.add('show');
+    md.innerHTML='<div class="md-title"><span>'+mn[selM]+(B?' — детайли':' — details')+'</span><span class="md-close" onclick="selM=0;recalc()">✕</span></div><div class="md-row"><span>'+(B?'Производство':'Production')+'</span><span class="md-v">'+mPr.toFixed(0)+' kWh</span></div><div class="md-row"><span>'+(B?'Консумация':'Consumption')+'</span><span class="md-v">'+mCo.toFixed(0)+' kWh ('+conH+(B?' бит':' house')+' + '+conEV+' EV + '+Math.round(conHeat*HB[selM])+' '+(B?'отопл.':'heat')+')</span></div><div class="md-row"><span>'+(B?'Баланс':'Balance')+'</span><span class="md-v" style="color:'+(diff>=0?'var(--green)':'var(--red)')+'">'+(diff>=0?'+':'')+diff.toFixed(0)+' kWh ('+(diff>=0?B?'излишък':'surplus':B?'дефицит':'deficit')+')</span></div><div class="md-row"><span>'+(B?'Самоконсумирано':'Self-consumed')+'</span><span class="md-v">'+mSe.toFixed(0)+' kWh</span></div><div class="md-row"><span>'+(isLost?(B?'Загубено в мрежата':'Lost to grid'):(B?'Продадено':'Sold'))+'</span><span class="md-v"'+(isLost?' style="color:var(--red)"':'')+'>'+mEx.toFixed(0)+' kWh</span></div><div class="md-row"><span>'+(B?'Спестявания за месеца':'Monthly savings')+'</span><span class="md-v" style="color:var(--green)">'+mSv.toFixed(0)+' €</span></div>';
+  } else md.classList.remove('show');
+  // Savings bar
+  if(yS1>0){var sp=savS/(savS+Math.max(savF,.01))*100;$('segS').style.width=Math.max(12,sp)+'%';$('segS').textContent=savS.toFixed(0)+' €';$('segF').style.width=Math.max(12,100-sp)+'%';$('segF').textContent=isLost?(B?'загубен':'lost'):savF.toFixed(0)+' €';$('segF').style.background=isLost?'var(--red)':'var(--blue)'}else{$('segS').style.width='50%';$('segS').textContent='0 €';$('segF').style.width='50%';$('segF').textContent='0 €';$('segF').style.background='var(--blue)'}
+  $('riC').textContent=totalInv>=1e4?(totalInv/1e3).toFixed(1)+'k €':totalInv.toFixed(0)+' €';$('riP').textContent=payback<100?payback.toFixed(1)+(B?' години':' years'):'—';$('riR').textContent=profit25>0?(profit25>=1e4?(profit25/1e3).toFixed(1)+'k €':profit25.toFixed(0)+' €'):'—';$('riCO').textContent=co2.toFixed(1)+' t';
   // Chart
-  const maxKwh = Math.max(...mKwh.slice(1));
-  for (let m = 1; m <= 12; m++) {
-    const pct = maxKwh > 0 ? (mKwh[m] / maxKwh * 88) : 0;
-    $('be' + m).style.height = Math.max(2, pct) + '%';
-    $('bk' + m).textContent = mKwh[m].toFixed(0);
-    $('bc' + m).classList.toggle('current', m === selMonth);
-  }
-
-  // Status
-  const pill = $('statusPill'), st = $('statusText');
-  pill.className = 'status';
-  if (nearShade > 0.25) { pill.classList.add('danger'); st.textContent = 'Високо засенчване — проблемно'; }
-  else if (nearShade > 0.10 || farShade > 0.07) { pill.classList.add('warn'); st.textContent = 'Засенчване над средното'; }
-  else if (dispOrient < 0.7) { pill.classList.add('warn'); st.textContent = 'Неоптимална ориентация'; }
-  else { pill.classList.add('ok'); st.textContent = 'Добри условия'; }
-
-  // Shade slider coloring
-  const nearEl = $('shadeNear');
-  nearEl.classList.remove('warn', 'danger');
-  if (nearShade > 0.25) nearEl.classList.add('danger');
-  else if (nearShade > 0.10) nearEl.classList.add('warn');
+  var allV=[];for(var j=1;j<=12;j++){allV.push(mP[j]);allV.push(mC[j])}var maxV=Math.max.apply(null,allV)||1;
+  for(var m=1;m<=12;m++){$('be'+m).style.height=Math.max(1,mP[m]/maxV*86)+'%';$('b2e'+m).style.height=Math.max(0,mC[m]/maxV*86)+'%';$('bk'+m).textContent=mP[m].toFixed(0);$('ck'+m).textContent=mC[m].toFixed(0);if(m===selM){$('be'+m).style.background='linear-gradient(180deg,#fff,var(--sun))';$('be'+m).style.boxShadow='0 0 8px rgba(245,197,66,.5)';$('bc'+m).style.background='rgba(245,197,66,.06)';$('bc'+m).style.borderRadius='6px'}else{$('be'+m).style.background='';$('be'+m).style.boxShadow='';$('bc'+m).style.background='';$('bc'+m).style.borderRadius=''}}
+  // Glow
+  var snEl=$('sn'),snVE=$('snV');snEl.classList.remove('warn','danger');snVE.classList.remove('warn-text','danger-text');if(nSh>.25){snEl.classList.add('danger');snVE.classList.add('danger-text')}else if(nSh>.1){snEl.classList.add('warn');snVE.classList.add('warn-text')}
+  $('sl').classList.remove('warn');$('slV').classList.remove('warn-text');if(sysL>.2){$('sl').classList.add('warn');$('slV').classList.add('warn-text')}
+  $('sf').classList.remove('warn');$('sfV').classList.remove('warn-text');if(fSh>.07){$('sf').classList.add('warn');$('sfV').classList.add('warn-text')}
+  var pl=$('statusPill'),st=$('statusText');pl.className='status';var dO=1;if(mode!=='fence'){dO=orientF(az1,+$('tilt').value,6)}
+  if(nSh>.25){pl.classList.add('danger');st.textContent=T.st_shade[lang]}else if(nSh>.1||fSh>.07){pl.classList.add('warn');st.textContent=T.st_shade2[lang]}else if(dO<.7){pl.classList.add('warn');st.textContent=T.st_orient[lang]}else if(yP<conY*.5){pl.classList.add('warn');st.textContent=T.st_low[lang]}else{pl.classList.add('ok');st.textContent=yP>=conY?T.st_full[lang]:T.st_ok[lang]}
 }
-
-/* ─── Events ─── */
-
-function toggleStr2() {
-  str2Open = !str2Open;
-  $('str2Toggle').classList.toggle('open', str2Open);
-  $('str2Body').classList.toggle('open', str2Open);
-  recalc();
-}
-
-// All sliders
-['area','irr','micro','month','shadeFar','shadeNear','tilt','tilt2','str2Share','bifacial','sysLoss','price','sysCost'].forEach(id => {
-  $(id).addEventListener('input', () => {
-    // If user touches tilt or az — switch to manual
-    if ((id === 'tilt') && activePreset !== 'manual') {
-      activePreset = 'manual';
-      manualOverride = true;
-      document.querySelectorAll('#presetBar .preset-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.preset === 'manual');
-      });
-      $('tiltAutoBadge').style.display = 'none';
-      $('presetNote').textContent = 'Ръчен режим — задайте азимут и наклон по ваш избор.';
-    }
-    recalc();
-  });
-});
-
-// Mode toggle
-$('mode').addEventListener('change', () => {
-  const fence = $('mode').value === 'fence';
-  $('roofBlock').style.display = fence ? 'none' : '';
-  $('fenceBlock').style.display = fence ? '' : 'none';
-  recalc();
-});
-
-// Preset buttons
-document.querySelectorAll('#presetBar .preset-btn').forEach(b => {
-  b.onclick = () => applyPreset(b.dataset.preset);
-});
-
-// Azimuth pills — also switches to manual
-document.querySelectorAll('#azBtns .pill').forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll('#azBtns .pill').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    az1 = +b.dataset.az;
-    // Switch to manual if a preset was active
-    if (activePreset !== 'manual') {
-      activePreset = 'manual';
-      manualOverride = true;
-      document.querySelectorAll('#presetBar .preset-btn').forEach(p => {
-        p.classList.toggle('active', p.dataset.preset === 'manual');
-      });
-      $('tiltAutoBadge').style.display = 'none';
-      $('presetNote').textContent = 'Ръчен режим — задайте азимут и наклон по ваш избор.';
-    }
-    recalc();
-  };
-});
-
-document.querySelectorAll('#az2Btns .pill').forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll('#az2Btns .pill').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    az2 = +b.dataset.az2;
-    recalc();
-  };
-});
-
-document.querySelectorAll('#fenceBtns .pill').forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll('#fenceBtns .pill').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    fenceDir = b.dataset.f;
-    recalc();
-  };
-});
-
-/* ─── Init ─── */
-initChart();
-applyPreset('annual');
-</script>
-</body>
-</html>
+var sliders=['area','irr','mic','sf','sn','tilt','t2','s2s','bif','sl','pr','fi','esc','sc2','sub','conH','conEV','conHeat','sc','bc'];
+sliders.forEach(function(id){$(id).addEventListener('input',function(){if(id==='tilt'&&preset!=='manual'){preset='manual';document.querySelectorAll('#presetBar .pbtn').forEach(function(b){b.classList.toggle('on',b.dataset.p==='manual')});$('presetNote').textContent=T.preset_manual[lang]}recalc()})});
+$('mode').addEventListener('change',function(){var f=$('mode').value==='fence';$('roofBlock').style.display=f?'none':'';$('fenceBlock').style.display=f?'':'none';recalc()});
+$('bat').addEventListener('change',recalc);
+document.querySelectorAll('#presetBar .pbtn').forEach(function(b){b.onclick=function(){applyPreset(b.dataset.p)}});
+document.querySelectorAll('#azBtns .pill').forEach(function(b){b.onclick=function(){document.querySelectorAll('#azBtns .pill').forEach(function(x){x.classList.remove('on')});b.classList.add('on');az1=+b.dataset.az;if(preset!=='manual'){preset='manual';document.querySelectorAll('#presetBar .pbtn').forEach(function(p){p.classList.toggle('on',p.dataset.p==='manual')});$('presetNote').textContent=T.preset_manual[lang]}recalc()}});
+document.querySelectorAll('#az2Btns .pill').forEach(function(b){b.onclick=function(){document.querySelectorAll('#az2Btns .pill').forEach(function(x){x.classList.remove('on')});b.classList.add('on');az2=+b.dataset.az2;recalc()}});
+document.querySelectorAll('#fenceBtns .pill').forEach(function(b){b.onclick=function(){document.querySelectorAll('#fenceBtns .pill').forEach(function(x){x.classList.remove('on')});b.classList.add('on');fDir=b.dataset.f;recalc()}});
+document.querySelectorAll('.lang-btn').forEach(function(b){b.onclick=function(){setLang(b.dataset.lang)}});
+initChart();applyPreset('annual');
+</script></body></html>
